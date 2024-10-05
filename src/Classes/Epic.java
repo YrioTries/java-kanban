@@ -5,7 +5,7 @@ import java.util.HashMap;
 public class Epic extends Task{
     private HashMap<Integer, SupTask> EpicTasks;
      public Epic(final int id, String title, String description){
-         super(id, title, description);
+         super(title, description);
          EpicTasks =  new HashMap();
      }
 
