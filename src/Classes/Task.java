@@ -3,13 +3,13 @@ package Classes;
 import java.util.Objects;
 
 public class Task {
-    //private final int id;
+    private final int id;
     private String title;
     private String description;
     private Status status;
 
-    public Task(String title, String description){
-        //this.id = id;
+    public Task(int id, String title, String description){
+        this.id = id;
         this.title = title;
         this.description = description;
         this.status = Status.NEW;
@@ -37,7 +37,7 @@ public class Task {
     public void setTitle(String title) {
         this.title = title;
     }
-/*
+
     public int getId() {
         return id;
     }
@@ -55,5 +55,4 @@ public class Task {
     public int hashCode() {
         return 31 * Objects.hash(title, description, id);
     }
- */
 }

@@ -26,8 +26,7 @@ public class TaskManager {
         System.out.println("Введите описание подзадачи:");
         descriptionManager = scanner.next();
 
-        SubTask sub = new SubTask(titleManager, descriptionManager);
-        return sub;
+        return new SubTask(id++, titleManager, descriptionManager);
     }
     private Epic makeEpic(){
         int command = 1;
@@ -39,8 +38,10 @@ public class TaskManager {
 
         Epic epic = new Epic(id++, titleManager, descriptionManager);
 
+        SubTask sub;
         do{
-            epic.setEpicTasks(id++, makeSubTask());
+            sub = makeSubTask();
+            epic.setEpicTasks(sub.getId(), sub);
             System.out.println("Чтобы добавить ещё одну подзадачу нажмите '1'");
             command = scanner.nextInt();
         } while (command == 1);
@@ -49,7 +50,8 @@ public class TaskManager {
         return epic;
     }
     public void setEpic(){
-        EpicManager.put(id++,makeEpic());
+        Epic epic = makeEpic();
+        EpicManager.put(epic.getId(), epic);
     }
 
     public void setTask(){
@@ -59,8 +61,8 @@ public class TaskManager {
         System.out.println("Введите описание эпика:");
         descriptionManager = scanner.next();
 
-        Task task = new Task(titleManager, descriptionManager);
-        TaskMaster.put(id++, task);
+        Task task = new Task(id++, titleManager, descriptionManager);
+        TaskMaster.put(task.getId(), task);
         System.out.println("Задача успешно создана");
     }
 
@@ -231,6 +233,28 @@ public class TaskManager {
                 System.out.println("Неизвестная команда");
 
         }
+    }
+
+    public void serchTask(int ident){
+        if (TaskMaster.containsKey(ident)){
+            System.out.println("Задача найдена\n" + TaskMaster.get(ident).getTitle());
+            //return TaskMaster.get(ident);
+        } else if (EpicManager.containsKey(ident)) {
+            System.out.println("Эпик найден\n" + EpicManager.get(ident).getTitle());
+            //return EpicManager.get(ident);
+        } else {
+            for (Epic epic : EpicManager.values()){
+                if (epic.EpicTasks.containsKey(ident)){
+                    System.out.println("Подзадача найдена\n" + epic.EpicTasks.get(ident).getTitle());
+                   //return epic.EpicTasks.get(ident);
+                }
+            }
+        }
+
+    }
+
+    public void updateTask(Task task){
+        TaskMaster.put(task.getId(), task);
     }
 
 }
