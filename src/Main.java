@@ -6,7 +6,7 @@ public class Main {
     static Scanner scan = new Scanner(System.in);
 
     public static void main(String[] args) {
-        TaskManager trecker = new TaskManager(scan);
+        /*TaskManager trecker = new TaskManager(scan);
         int command;
         while (true){
             command = scan.nextInt();
@@ -32,7 +32,7 @@ public class Main {
                 default:
                     System.out.println("Неизвестная комманда");
             }
-        }
+        }*/
 
     }
 

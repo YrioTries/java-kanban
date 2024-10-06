@@ -49,6 +49,9 @@ public class TaskManager {
         System.out.println("Эпик успешно создан");
         return epic;
     }
+
+
+
     public void setEpic(){
         Epic epic = makeEpic();
         EpicManager.put(epic.getId(), epic);
@@ -65,6 +68,8 @@ public class TaskManager {
         TaskMaster.put(task.getId(), task);
         System.out.println("Задача успешно создана");
     }
+
+
 
     private void deleteAll(){
         EpicManager.clear();
@@ -251,6 +256,23 @@ public class TaskManager {
             }
         }
 
+    }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //
+    public void setTaskTest(String title, String description){
+        Task task = new Task(id++, title, description);
+        TaskMaster.put(task.getId(), task);
+    }
+
+    public Epic setEpicTest(String title, String description){
+        Epic epic = new Epic(id++, title, description);
+        EpicManager.put(epic.getId(), epic);
+        return epic;
+    }
+
+    public void makeSubTask(Epic epic, String title, String description){
+        SubTask sub = new SubTask(id++, title, description);
+        epic.EpicTasks.put(sub.getId(), sub);
     }
 
     public void updateTask(Task task){
