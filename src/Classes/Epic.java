@@ -12,5 +12,4 @@ public class Epic extends Task{
      public void setEpicTasks(final Integer id, SubTask sup){
          EpicTasks.put(id, sup);
      }
-
 }

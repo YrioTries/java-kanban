@@ -12,6 +12,7 @@ public class Main {
             command = scan.nextInt();
             switch (command){
                 case 1:
+
                     break;
             }
         }

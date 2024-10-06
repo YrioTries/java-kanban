@@ -26,7 +26,7 @@ public class TaskManager {
         System.out.println("Введите описание подзадачи:");
         descriptionManager = scanner.next();
 
-        SubTask sub = new SubTask(id++, titleManager, descriptionManager);
+        SubTask sub = new SubTask(titleManager, descriptionManager);
         return sub;
     }
     private Epic makeEpic(){
@@ -118,6 +118,7 @@ public class TaskManager {
         System.out.println("4.Удалить все эпики");
         System.out.println("5.Удалить все задачи");
         System.out.println("6.Удалить всё");
+        System.out.println("7.Выйти из меню");
         command = scanner.nextInt();
 
         switch (command){
@@ -149,6 +150,81 @@ public class TaskManager {
 
             case 6:
                 deleteAll();
+                break;
+
+            case 7:
+                System.out.println("Вы вышли из меню");
+                break;
+
+            default:
+                System.out.println("Неизвестная команда");
+
+        }
+    }
+
+    private void getSubTuskList(Epic epic){
+        for (Integer id : epic.EpicTasks.keySet()){
+            System.out.println( epic.EpicTasks.get(id).getTitle() + " c id: " + id + " и статусом: "
+                    + epic.EpicTasks.get(id).getStatus());
+        }
+    }
+
+    private void getEpicList(int id){
+        System.out.println("Эпик: " + EpicManager.get(id).getTitle() + " c id: " + id + " и статусом: "
+                + EpicManager.get(id).getStatus());
+    }
+
+    private void getTaskList(int id){
+        System.out.println("Задача: " + TaskMaster.get(id).getTitle() + " c id: " + id + " и статусом: "
+                + TaskMaster.get(id).getStatus());
+    }
+    private void getAllTasks(int lastId){
+        for (int i = 0; i <= lastId; i++){
+            if (EpicManager.containsKey(i)){
+                getEpicList(i);
+                getSubTuskList(EpicManager.get(i));
+
+            } else if (TaskMaster.containsKey(i)){
+                getTaskList(i);
+            }
+        }
+    }
+
+    public void getList(){
+        int command;
+        System.out.println("1.Вывести список задач");
+        System.out.println("2.Вывести список эпиков");
+        System.out.println("3.Вывести список подзадач эпика");
+        System.out.println("4.Вывести все задачи");
+        System.out.println("5.Выйти из меню");
+
+        command = scanner.nextInt();
+
+        switch (command){
+            case 1:
+                for (Integer id : TaskMaster.keySet()){
+                    getTaskList(id);
+                }
+                break;
+
+            case 2:
+                for (Integer id : EpicManager.keySet()){
+                    getEpicList(id);
+                }
+                break;
+
+            case 3:
+                System.out.println("Введите id эпика");
+                id = scanner.nextInt();
+                getSubTuskList(EpicManager.get(id));
+                break;
+
+            case 4:
+                getAllTasks(id);
+                break;
+
+            case 5:
+                System.out.println("Вы вышли из меню");
                 break;
 
             default:
