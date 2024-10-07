@@ -3,17 +3,17 @@ package Classes;
 import java.util.HashMap;
 
 public class Epic extends Task{
-    protected HashMap<Integer, SubTask> EpicTasks;
+    public HashMap<Integer, Subtask> epicSubtasks;
      public Epic(final int id, String title, String description){
          super(id, title, description);
-         EpicTasks =  new HashMap();
+         epicSubtasks =  new HashMap();
      }
 
-     public void setEpicTasks(final Integer id, SubTask sup){
-         EpicTasks.put(id, sup);
+     public void setEpicTasks(final Integer id, Subtask sup){
+         epicSubtasks.put(id, sup);
      }
 
-     public SubTask getSubTask(int id){
-         return EpicTasks.get(id);
+     public Subtask getSubTask(int id){
+         return epicSubtasks.get(id);
      }
 }
