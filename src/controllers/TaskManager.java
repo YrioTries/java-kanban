@@ -121,8 +121,8 @@ public class TaskManager {
             }
             if (taskMaster.containsKey(i)){
                 if (taskMaster.get(i).getClass() == Epic.class) {
-                    System.out.println("Эпик: " + ((Epic)taskMaster.get(id)).getTitle() + " c id: " + id + " и статусом: "
-                            + ((Epic)taskMaster.get(id)).getStatus());
+                    System.out.println("Эпик: " + ((Epic)taskMaster.get(i)).getTitle() + " c id: " + i + " и статусом: "
+                            + ((Epic)taskMaster.get(i)).getStatus());
                     getSubTuskList((((Epic) taskMaster.get(i))));
                 }
             }
@@ -138,8 +138,8 @@ public class TaskManager {
 
             if(taskMaster.containsKey(i)){
                 if (taskMaster.get(i).getClass() == Task.class) {
-                    System.out.println("Задача: " + ((Task) taskMaster.get(id)).getTitle() + " c id: " + id + " и статусом: "
-                            + ((Task) taskMaster.get(id)).getStatus());
+                    System.out.println("Задача: " + ((Task) taskMaster.get(i)).getTitle() + " c id: " + i + " и статусом: "
+                            + ((Task) taskMaster.get(i)).getStatus());
                 }
             }
         }
@@ -152,13 +152,13 @@ public class TaskManager {
             }
 
             if (taskMaster.containsKey(i) && taskMaster.get(i) != null) {
-                if (taskMaster.get(i).getClass() == Task.class && taskMaster.get(i) != null) {
-                    System.out.println("Задача: " + ((Task) taskMaster.get(id)).getTitle() + " c id: " + id + " и статусом: "
-                            + ((Task)taskMaster.get(id)).getStatus());
+                if (taskMaster.containsKey(i) && taskMaster.get(i).getClass() == Task.class && taskMaster.get(i) != null) {
+                    System.out.println("Задача: " + ((Task) taskMaster.get(i)).getTitle() + " c id: " + i + " и статусом: "
+                            + ((Task)taskMaster.get(i)).getStatus());
 
                 } else if (taskMaster.get(i).getClass() == Epic.class) {
-                    System.out.println("Эпик: " + ((Epic) taskMaster.get(id)).getTitle() + " c id: " + id + " и статусом: "
-                            + ((Epic)taskMaster.get(id)).getStatus());
+                    System.out.println("Эпик: " + ((Epic) taskMaster.get(i)).getTitle() + " c id: " + i + " и статусом: "
+                            + ((Epic)taskMaster.get(i)).getStatus());
                     getSubTuskList((((Epic) taskMaster.get(i))));
                 }
             }

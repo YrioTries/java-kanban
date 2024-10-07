@@ -62,19 +62,19 @@ public class TestTasks {
         test.IDelete(3);
         test.getAllTasks();
 
-        System.out.println("Проверка changeStatusTask()");
-        System.out.println(" test.changeStatusTask(Status.DONE, task2);");
-        System.out.println(" test.changeStatusSub(Status.IN_PROGRESS, epic1.getSubTask(sub1.getId()));");
-        System.out.println(" test.changeStatusEpic(epic1);\n");
+        System.out.println("\nПроверка changeStatusTask()");
+        System.out.println("test.changeStatusTask(Status.DONE, task2);");
+        System.out.println("test.changeStatusSub(Status.IN_PROGRESS, epic1.getSubTask(sub1.getId()));");
+        System.out.println("test.changeStatusEpic(epic1);\n");
         test.changeStatusTask(Status.DONE, task2);
         test.changeStatusSub(Status.IN_PROGRESS, epic1.getSubTask(sub1.getId()));
         test.changeStatusEpic(epic1);
 
         test.getAllTasks();;
         System.out.println();
-        System.out.println(" test.changeStatusSub(Status.DONE, epic1.getSubTask(sub1.getId()))");
-        System.out.println(" test.changeStatusSub(Status.DONE, epic1.getSubTask(sub2.getId()))");
-        System.out.println(" test.changeStatusEpic(epic1);\n");
+        System.out.println("test.changeStatusSub(Status.DONE, epic1.getSubTask(sub1.getId()))");
+        System.out.println("test.changeStatusSub(Status.DONE, epic1.getSubTask(sub2.getId()))");
+        System.out.println("test.changeStatusEpic(epic1);\n");
 
         test.changeStatusSub(Status.DONE, epic1.getSubTask(sub1.getId()));
         test.changeStatusSub(Status.DONE, epic1.getSubTask(sub2.getId()));
