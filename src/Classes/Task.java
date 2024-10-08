@@ -3,16 +3,20 @@ package Classes;
 import java.util.Objects;
 
 public class Task {
-    private final int id;
+    private int id;
     private String title;
     private String description;
     private Status status;
 
-    public Task(int id, String title, String description){
-        this.id = id;
+    public Task(String title, String description){
+
         this.title = title;
         this.description = description;
         this.status = Status.NEW;
+    }
+
+    public void setId(Integer id){
+        this.id = id;
     }
     public Status getStatus() {
         return status;

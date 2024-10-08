@@ -15,17 +15,23 @@ public class TestTasks {
         int id;
 
 
-        Epic epic1 = test.makeEpic("Эпик1", "простой");
-        Subtask sub1 = test.makeSub(epic1, "1.Подзадача", "средняя");
-        Subtask sub2 = test.makeSub(epic1, "2.Подзадача", "тяжелее");
+        Epic epic1 = new Epic("1.Эпик", "простой");
+        test.pushEpic(epic1);
 
-        Epic epic2 = test.makeEpic("Эпик2", "простой");
+        Subtask sub1 = new Subtask("1.1.Подзадача", "средняя");
+        Subtask sub2 = new Subtask("1.2.Подзадача", "тяжелее");
+        test.pushSub(epic1, sub1);
+        test.pushSub(epic1, sub2);
 
-        Task task1 = test.makeTask("Задание 1", "сложноватое");
-        Task task2 = test.makeTask("Задание 2", "сложноватое");
+        Epic epic2 = new Epic("2.Эпик", "простой");
+
+        Task task1 = new Task("1.Задание", "сложноватое");
+        Task task2 = new Task("2.Задание", "сложноватое");
+        test.pushTask(task1);
+        test.pushTask(task2);
 
         System.out.println("\nПроверка метода getAllTasks():");
-        test.getAllTasks();
+        test.printAllTasks();
 
         System.out.println("\nПроверка метода getMotherID(sub1):");
         System.out.println("Материнский id эпика подзадачи '" + sub1.getTitle() + "': id:"+ test.getMotherID(sub1) + " Эпика: " + ((Epic)test.serchTask(test.getMotherID(sub1))).getTitle());
@@ -58,9 +64,9 @@ public class TestTasks {
         System.out.println("\nПроверка метода getEpicList()");
         test.getEpicList();
 
-        System.out.println("\nПроверка метода test.IDelete(3)");
-        test.IDelete(3);
-        test.getAllTasks();
+        System.out.println("\nПроверка метода delete(3)");
+        test.delete(3);
+        test.printAllTasks();
 
         System.out.println("\nПроверка changeStatusTask()");
         System.out.println("test.changeStatusTask(Status.DONE, task2);");
@@ -70,7 +76,7 @@ public class TestTasks {
         test.changeStatusSub(Status.IN_PROGRESS, epic1.getSubTask(sub1.getId()));
         test.changeStatusEpic(epic1);
 
-        test.getAllTasks();;
+        test.printAllTasks();;
         System.out.println();
         System.out.println("test.changeStatusSub(Status.DONE, epic1.getSubTask(sub1.getId()))");
         System.out.println("test.changeStatusSub(Status.DONE, epic1.getSubTask(sub2.getId()))");
@@ -80,6 +86,6 @@ public class TestTasks {
         test.changeStatusSub(Status.DONE, epic1.getSubTask(sub2.getId()));
         test.changeStatusEpic(epic1);
 
-        test.getAllTasks();
+        test.printAllTasks();
     }
 }

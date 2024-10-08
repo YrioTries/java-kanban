@@ -3,6 +3,7 @@ package controllers;
 import Classes.*;
 
 import java.util.HashMap;
+import java.util.ArrayList;
 
 public class TaskManager {
     private int id;
@@ -11,73 +12,52 @@ public class TaskManager {
 
     private HashMap<Integer, Object> taskMaster;
 
-
     public TaskManager() {
         taskMaster = new HashMap<>();
         id = 0;
     }
 
-    public void deleteAll() {
-        taskMaster.clear();
-        System.out.println("Все задания успешно удалены");
-    }
-
-    public void deleteAllEpics() {
-        taskMaster.clear();
-        System.out.println("Все эпики успешно удалены");
-    }
-
-    public void deleteAllTasks() {
-        taskMaster.clear();
-        System.out.println("Все задания успешно удалены");
-    }
-
-    public void IDeleteEpic(Integer id) {
+    public void delete(Integer id) {
         if (taskMaster.containsKey(id)) {
-            taskMaster.remove(id);
-            System.out.println("Эпик успешно удалён");
-        } else {
-            System.out.println("Эпика с таким id не найдено");
-        }
-    }
-
-    public void IDelete(Integer id) {
-
-        if (taskMaster.containsKey(id)) {
-            if (taskMaster.get(id).getClass() == Task.class) {
-                System.out.println("Задача '" + ((Task)taskMaster.get(id)).getTitle() + "' успешно удалена");
-                taskMaster.remove(id);
-            } else if (taskMaster.get(id).getClass() == Epic.class) {
-                System.out.println("Эпик '" + ((Epic)taskMaster.get(id)).getTitle() + "' успешно удалена");
+            if (taskMaster.get(id).getClass() == Task.class || taskMaster.get(id).getClass() == Epic.class) {
                 taskMaster.remove(id);
             } else {
                 for (Object epic : taskMaster.values()) {
                     ((Epic) epic).epicSubtasks.remove(id);
-                    System.out.println("Подпункт успешно удалён");
+                    changeStatusEpic((Epic) epic);
                 }
             }
-        } else {
-            System.out.println("Нет такой задачи");
-
         }
     }
 
-    public Task makeTask(String title, String description) {
-        Task task = new Task(id++, title, description);
+    public void deleteAllSubtasks(){
+        for (Object epic : taskMaster.values()) {
+            if (epic.getClass() == Epic.class){
+                ((Epic) epic).epicSubtasks.clear();
+            }
+        }
+    }
+
+    public int pushTask(Task task) {
+        final int ident = id++;
+        task.setId(ident);
         taskMaster.put(task.getId(), task);
-        return task;
+        return task.getId();
     }
 
-    public Epic makeEpic(String title, String description) {
-        Epic epic = new Epic(id++, title, description);
+    public int pushEpic(Epic epic) {
+        final int ident = id++;
+        epic.setId(ident);
         taskMaster.put(epic.getId(), epic);
-        return epic;
+        return epic.getId();
     }
 
-    public Subtask makeSub(Epic epic, String title, String description) {
-        Subtask sub = new Subtask(id++, title, description);
+    public int pushSub(Epic epic, Subtask sub) {
+        final int ident = id++;
+        sub.setId(ident);
         epic.epicSubtasks.put(sub.getId(), sub);
-        return sub;
+        changeStatusEpic(epic);
+        return sub.getId();
     }
 
     public void updateTask(Task task) {
@@ -85,12 +65,9 @@ public class TaskManager {
     }
 
     public Object serchTask(int ident) {
-
         if (taskMaster.containsKey(ident)) {
-            if (taskMaster.get(ident).getClass() == Task.class) {
-                return ((Task) taskMaster.get(ident));
-            } else if (taskMaster.get(ident).getClass() == Epic.class) {
-                return ((Epic) taskMaster.get(ident));
+            if (taskMaster.get(ident).getClass() == Task.class || taskMaster.get(ident).getClass() == Epic.class) {
+                return taskMaster.get(ident);
             } else {
                 for (Object epic : taskMaster.values()) {
                     if (((Epic) epic).epicSubtasks.containsKey(ident)) {
@@ -98,56 +75,55 @@ public class TaskManager {
                     }
                 }
             }
-        } else {
-            System.out.println("Нет такой задачи");
-
         }
         return null;
     }
 
-
-    private void getSubTuskList(Epic epic){
-        for (Integer id : epic.epicSubtasks.keySet()){
-            System.out.println(epic.epicSubtasks.get(id).getTitle() + " c id: " + id + " и статусом: "
-                    + epic.epicSubtasks.get(id).getStatus());
+    public ArrayList<Subtask> getEpicSubtasks(int epicId) {
+        ArrayList<Subtask> tasks = new ArrayList<>();
+        Epic epic = (Epic) serchTask(epicId);
+        if (epic == null) {
+            return null;
         }
+        for (int id : epic.epicSubtasks.keySet()) {
+            tasks.add(epic.epicSubtasks.get(id));
+        }
+        return tasks;
     }
 
-    public void getEpicList(){
+    public ArrayList<Task> getEpicList(){
+        ArrayList<Task> tasks = new ArrayList<>();
         for (int i = 0; i < id; i++){
             if (taskMaster == null){
-                System.out.println("У вас нет активных эпиков");
-                return;
+                return null;
             }
             if (taskMaster.containsKey(i)){
                 if (taskMaster.get(i).getClass() == Epic.class) {
-                    System.out.println("Эпик: " + ((Epic)taskMaster.get(i)).getTitle() + " c id: " + i + " и статусом: "
-                            + ((Epic)taskMaster.get(i)).getStatus());
-                    getSubTuskList((((Epic) taskMaster.get(i))));
+                    tasks.add((Task) taskMaster.get(i));
                 }
             }
         }
+        return tasks;
     }
 
-    public void getTaskList(){
+    public ArrayList<Task> getTaskList(){
+        ArrayList<Task> tasks = new ArrayList<>();
         for (int i = 0; i < id; i++){
             if (taskMaster == null){
-                System.out.println("У вас нет активных задач");
-                return;
+                return null;
             }
-
-            if(taskMaster.containsKey(i)){
+            if (taskMaster.containsKey(i)){
                 if (taskMaster.get(i).getClass() == Task.class) {
-                    System.out.println("Задача: " + ((Task) taskMaster.get(i)).getTitle() + " c id: " + i + " и статусом: "
-                            + ((Task) taskMaster.get(i)).getStatus());
+                    tasks.add((Task) taskMaster.get(i));
                 }
             }
         }
+        return tasks;
     }
-    public void getAllTasks(){
+    public void printAllTasks(){
+        System.out.println("///////////////////////////////_ALL_TASKS_///////////////////////////////");
         for (int i = 0; i < id; i++){
             if (taskMaster == null){
-                System.out.println("У вас нет активных задач");
                 return;
             }
 
@@ -157,16 +133,24 @@ public class TaskManager {
                             + ((Task)taskMaster.get(i)).getStatus());
 
                 } else if (taskMaster.get(i).getClass() == Epic.class) {
-                    System.out.println("Эпик: " + ((Epic) taskMaster.get(i)).getTitle() + " c id: " + i + " и статусом: "
+                    System.out.println("\nЭпик: " + ((Epic) taskMaster.get(i)).getTitle() + " c id: " + i + " и статусом: "
                             + ((Epic)taskMaster.get(i)).getStatus());
-                    getSubTuskList((((Epic) taskMaster.get(i))));
+
+                    for (Subtask sub: getEpicSubtasks(((Epic) taskMaster.get(i)).getId())){
+                        System.out.println("Подзадача: " + sub.getTitle() + " c id: " + i + " и статусом: "
+                                + sub.getStatus());
+                    }
+                    System.out.println();
+
                 }
             }
         }
+        System.out.println("\n////////////////////////////////////////////////////////////////////////");
     }
 
-    public void changeStatusSub(Status status, Object sub){
-        ((Subtask) sub).setStatus(status);
+    public void changeStatusSub(Status status, Subtask sub){
+        sub.setStatus(status);
+        changeStatusEpic((Epic) serchTask(getMotherID(sub)));
     }
 
     public void changeStatusTask(Status status, Object task){
