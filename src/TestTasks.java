@@ -38,11 +38,11 @@ public class TestTasks {
 
         System.out.println("\nПроверка метода serchTask(id)");
         id = epic1.getId();
-        Object o = test.serchTask(id);
+        Task o = test.serchTask(id);
 
-        if (o == Task.class) {
+        if (o.correctClass()) {
             System.out.println("Задача найдена\n" + ((Task) o).getTitle() + " класса: " + o.getClass());
-        } else if (o.getClass() == Epic.class) {
+        } else if (o.correctClass()) {
             System.out.println("Эпик найден\n" + ((Epic) o).getTitle() + " класса: " + o.getClass());
 
         } else {
@@ -63,6 +63,10 @@ public class TestTasks {
 
         System.out.println("\nПроверка метода getEpicList()");
         test.getEpicList();
+
+        System.out.println("\nПроверка метода deleteAllSubtasks()");
+        test.deleteAllSubtasks();
+        test.printAllTasks();
 
         System.out.println("\nПроверка метода delete(3)");
         test.delete(3);

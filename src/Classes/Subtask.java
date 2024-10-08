@@ -8,5 +8,6 @@ public class Subtask extends Task{
         super(title, description);
     }
 
-
+    @Override
+    public boolean correctClass() { return this.getClass() == Subtask.class; }
 }

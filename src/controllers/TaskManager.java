@@ -10,7 +10,7 @@ public class TaskManager {
     private String titleManager;
     private String descriptionManager;
 
-    private HashMap<Integer, Object> taskMaster;
+    private HashMap<Integer, Task> taskMaster;
 
     public TaskManager() {
         taskMaster = new HashMap<>();
@@ -22,7 +22,7 @@ public class TaskManager {
             if (taskMaster.get(id).getClass() == Task.class || taskMaster.get(id).getClass() == Epic.class) {
                 taskMaster.remove(id);
             } else {
-                for (Object epic : taskMaster.values()) {
+                for (Task epic : taskMaster.values()) {
                     ((Epic) epic).epicSubtasks.remove(id);
                     changeStatusEpic((Epic) epic);
                 }
@@ -31,10 +31,8 @@ public class TaskManager {
     }
 
     public void deleteAllSubtasks(){
-        for (Object epic : taskMaster.values()) {
-            if (epic.getClass() == Epic.class){
-                ((Epic) epic).epicSubtasks.clear();
-            }
+        for (Task epic : taskMaster.values()) {
+            ((Epic) epic).epicSubtasks.clear();
         }
     }
 
@@ -64,7 +62,7 @@ public class TaskManager {
         taskMaster.put(task.getId(), task);
     }
 
-    public Object serchTask(int ident) {
+    public Task serchTask(int ident) {
         if (taskMaster.containsKey(ident)) {
             if (taskMaster.get(ident).getClass() == Task.class || taskMaster.get(ident).getClass() == Epic.class) {
                 return taskMaster.get(ident);
@@ -181,10 +179,10 @@ public class TaskManager {
     }
 
     public Integer getMotherID (Subtask sub){
-        for (Object epic : taskMaster.values()){
+        for (Task epic : taskMaster.values()){
             for(Subtask subtask : ((Epic) epic).epicSubtasks.values()){
                 if (sub.getId() == subtask.getId()){
-                    return ((Epic) epic).getId();
+                    return epic.getId();
                 }
             }
         }
