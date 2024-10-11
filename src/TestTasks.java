@@ -34,18 +34,19 @@ public class TestTasks {
         test.printAllTasks();
 
         System.out.println("\nПроверка метода getMotherID(sub1):");
-        System.out.println("Материнский id эпика подзадачи '" + sub1.getTitle() + "': id:"+ test.getMotherID(sub1) + " Эпика: " + ((Epic)test.serchTask(test.getMotherID(sub1))).getTitle());
+        System.out.println("Материнский id эпика подзадачи '" + sub1.getTitle() + "': id:"+ test.getMotherID(sub1.getId()) + " Эпика: " + ((Epic)test.serchTask(test.getMotherID(sub1.getId()))).getTitle());
 
         System.out.println("\nПроверка метода serchTask(id)");
+        /////////////////////////////////////////////////////////////////////////////////////////////////
         id = epic1.getId();
         Object o = test.serchTask(id);
 
-        if (o == Task.class) {
-            System.out.println("Задача найдена\n" + ((Task) o).getTitle() + " класса: " + o.getClass());
-        } else if (o.getClass() == Epic.class) {
+        if (o instanceof Epic) {
             System.out.println("Эпик найден\n" + ((Epic) o).getTitle() + " класса: " + o.getClass());
 
-        } else {
+        } else if (o instanceof Task) {
+            System.out.println("Задача найдена\n" + ((Task) o).getTitle() + " класса: " + o.getClass());
+        }  else {
             System.out.println("Подзадача найдена\n" + ((Subtask)o).getTitle() + " класса: " + o.getClass());
         }
 
@@ -60,6 +61,7 @@ public class TestTasks {
         } else {
             System.out.println("Подзадача найдена\n" + ((Subtask)o).getTitle() + " класса: " + o.getClass());
         }
+        ///////////////////////////////////////////////////////////////////////////////////////////
 
         System.out.println("\nПроверка метода getEpicList()");
         test.getEpicList();

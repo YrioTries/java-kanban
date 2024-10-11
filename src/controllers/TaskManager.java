@@ -5,12 +5,12 @@ import Classes.*;
 import java.util.HashMap;
 import java.util.ArrayList;
 
-public class TaskManager {
+public class TaskManager<T> {
     private int id;
     private String titleManager;
     private String descriptionManager;
 
-    private HashMap<Integer, Object> taskMaster;
+    private HashMap<Integer, T> taskMaster;
 
     public TaskManager() {
         taskMaster = new HashMap<>();
@@ -19,21 +19,27 @@ public class TaskManager {
 
     public void delete(Integer id) {
         if (taskMaster.containsKey(id)) {
-            if (taskMaster.get(id).getClass() == Task.class || taskMaster.get(id).getClass() == Epic.class) {
+            if (taskMaster.get(id) instanceof Task || taskMaster.get(id) instanceof Epic) {
                 taskMaster.remove(id);
             } else {
-                for (Object epic : taskMaster.values()) {
-                    ((Epic) epic).epicSubtasks.remove(id);
-                    changeStatusEpic((Epic) epic);
+                for (T epic : taskMaster.values()) {
+                    if(epic instanceof Epic){
+                        ((Epic) epic).getSubMap().remove(id);
+                        changeStatusEpic((Epic) epic);
+                    }
+
                 }
+                getEpicList().get(getMotherID(id)).getSubMap().remove(id);
+                changeStatusEpic(getEpicList().get(getMotherID(id)));
             }
         }
     }
 
     public void deleteAllSubtasks(){
-        for (Object epic : taskMaster.values()) {
-            if (epic.getClass() == Epic.class){
-                ((Epic) epic).epicSubtasks.clear();
+        for (T epic : taskMaster.values()) {
+            if (epic instanceof Epic){
+                ((Epic) epic).getSubMap().clear();
+                changeStatusEpic((Epic) epic);
             }
         }
     }
@@ -41,37 +47,40 @@ public class TaskManager {
     public int pushTask(Task task) {
         final int ident = id++;
         task.setId(ident);
-        taskMaster.put(task.getId(), task);
+        taskMaster.put(task.getId(), (T) task);
         return task.getId();
     }
 
     public int pushEpic(Epic epic) {
         final int ident = id++;
         epic.setId(ident);
-        taskMaster.put(epic.getId(), epic);
+        taskMaster.put(epic.getId(), (T) epic);
         return epic.getId();
     }
 
     public int pushSub(Epic epic, Subtask sub) {
         final int ident = id++;
         sub.setId(ident);
-        epic.epicSubtasks.put(sub.getId(), sub);
+        epic.getSubMap().put(sub.getId(), sub);
         changeStatusEpic(epic);
         return sub.getId();
     }
 
     public void updateTask(Task task) {
-        taskMaster.put(task.getId(), task);
+        if(task != null){
+            taskMaster.put(task.getId(), (T) task);
+        }
+
     }
 
-    public Object serchTask(int ident) {
+    public T serchTask(int ident) {
         if (taskMaster.containsKey(ident)) {
-            if (taskMaster.get(ident).getClass() == Task.class || taskMaster.get(ident).getClass() == Epic.class) {
+            if (taskMaster.get(ident) instanceof Task || taskMaster.get(ident) instanceof Epic) {
                 return taskMaster.get(ident);
             } else {
-                for (Object epic : taskMaster.values()) {
-                    if (((Epic) epic).epicSubtasks.containsKey(ident)) {
-                        return ((Epic) epic).epicSubtasks.get(ident);
+                for (T epic : taskMaster.values()) {
+                    if (epic instanceof Epic && ((Epic) epic).getSubMap().containsKey(ident)) {
+                        return (T) ((Epic) epic).getSubMap().get(ident);
                     }
                 }
             }
@@ -85,21 +94,18 @@ public class TaskManager {
         if (epic == null) {
             return null;
         }
-        for (int id : epic.epicSubtasks.keySet()) {
-            tasks.add(epic.epicSubtasks.get(id));
+        for (int id : epic.getSubMap().keySet()) {
+            tasks.add(epic.getSubMap().get(id));
         }
         return tasks;
     }
 
-    public ArrayList<Task> getEpicList(){
-        ArrayList<Task> tasks = new ArrayList<>();
+    public ArrayList<Epic> getEpicList(){
+        ArrayList<Epic> tasks = new ArrayList<>();
         for (int i = 0; i < id; i++){
-            if (taskMaster == null){
-                return null;
-            }
             if (taskMaster.containsKey(i)){
-                if (taskMaster.get(i).getClass() == Epic.class) {
-                    tasks.add((Task) taskMaster.get(i));
+                if (taskMaster.get(i) instanceof Epic) {
+                    tasks.add((Epic) taskMaster.get(i));
                 }
             }
         }
@@ -109,11 +115,8 @@ public class TaskManager {
     public ArrayList<Task> getTaskList(){
         ArrayList<Task> tasks = new ArrayList<>();
         for (int i = 0; i < id; i++){
-            if (taskMaster == null){
-                return null;
-            }
             if (taskMaster.containsKey(i)){
-                if (taskMaster.get(i).getClass() == Task.class) {
+                if (taskMaster.get(i) instanceof Task) {
                     tasks.add((Task) taskMaster.get(i));
                 }
             }
@@ -128,19 +131,21 @@ public class TaskManager {
             }
 
             if (taskMaster.containsKey(i) && taskMaster.get(i) != null) {
-                if (taskMaster.containsKey(i) && taskMaster.get(i).getClass() == Task.class && taskMaster.get(i) != null) {
-                    System.out.println("Задача: " + ((Task) taskMaster.get(i)).getTitle() + " c id: " + i + " и статусом: "
-                            + ((Task)taskMaster.get(i)).getStatus());
-
-                } else if (taskMaster.get(i).getClass() == Epic.class) {
-                    System.out.println("\nЭпик: " + ((Epic) taskMaster.get(i)).getTitle() + " c id: " + i + " и статусом: "
+                 if (taskMaster.get(i) instanceof Epic) {
+                    System.out.println("\nЭпик: " + ((Epic) taskMaster.get(i)).getTitle() + " c id: "
+                            + ((Epic) taskMaster.get(i)).getId() + " и статусом: "
                             + ((Epic)taskMaster.get(i)).getStatus());
 
                     for (Subtask sub: getEpicSubtasks(((Epic) taskMaster.get(i)).getId())){
-                        System.out.println("Подзадача: " + sub.getTitle() + " c id: " + i + " и статусом: "
+                        System.out.println("Подзадача: " + sub.getTitle() + " c id: " + sub.getId() + " и статусом: "
                                 + sub.getStatus());
                     }
                     System.out.println();
+
+                } else if (taskMaster.get(i) instanceof Task) {
+                    System.out.println("Задача: " + ((Task) taskMaster.get(i)).getTitle() + " c id: "
+                            + ((Task) taskMaster.get(i)).getId() + " и статусом: "
+                            + ((Task)taskMaster.get(i)).getStatus());
 
                 }
             }
@@ -150,7 +155,7 @@ public class TaskManager {
 
     public void changeStatusSub(Status status, Subtask sub){
         sub.setStatus(status);
-        changeStatusEpic((Epic) serchTask(getMotherID(sub)));
+        changeStatusEpic((Epic) serchTask(getMotherID(sub.getId())));
     }
 
     public void changeStatusTask(Status status, Object task){
@@ -161,7 +166,7 @@ public class TaskManager {
         boolean setNew = true;
         boolean setDone = true;
 
-        for (Subtask sub : epic.epicSubtasks.values()){
+        for (Subtask sub : epic.getSubMap().values()){
             if (sub.getStatus() != Status.NEW){
                 setNew = false;
             }
@@ -180,10 +185,10 @@ public class TaskManager {
         }
     }
 
-    public Integer getMotherID (Subtask sub){
-        for (Object epic : taskMaster.values()){
-            for(Subtask subtask : ((Epic) epic).epicSubtasks.values()){
-                if (sub.getId() == subtask.getId()){
+    public Integer getMotherID (Integer id){
+        for (T epic : taskMaster.values()){
+            for(Subtask subtask : ((Epic) epic).getSubMap().values()){
+                if (id == subtask.getId()){
                     return ((Epic) epic).getId();
                 }
             }
