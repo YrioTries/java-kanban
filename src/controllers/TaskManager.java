@@ -31,7 +31,7 @@ public class TaskManager<T> {
         for (T epic : taskMaster.values()) {
             if (epic instanceof Epic){
                 ((Epic) epic).getSubMap().clear();
-                changeStatusEpic(epic);
+                changeStatusEpic((Epic) epic);
             }
         }
     }
