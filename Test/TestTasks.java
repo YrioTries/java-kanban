@@ -1,34 +1,33 @@
 import Classes.*;
 import controllers.TaskManager;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.Scanner;
 
-public class TestTasks {
-    public static void testFun(){
+public class TestTasks<T> {
+
+    TaskManager test = new TaskManager();
+    Epic epic1 = new Epic("1.Эпик", "простой");
+    Subtask sub1 = new Subtask("1.1.Подзадача", "средняя");
+    Subtask sub2 = new Subtask("1.2.Подзадача", "тяжелее");
+    Epic epic2 = new Epic("2.Эпик", "простой");
+    Task task1 = new Task("1.Задание", "сложноватое");
+    Task task2 = new Task("2.Задание", "сложноватое");
+
+    @Test
+    public void testFun(){
         System.out.printf("\n%s\n", "///////////////////////////////////////////");
         System.out.printf("%s\n", "//////// Epic_SubTask_Task_MethodsTest ////");
         System.out.printf("%s\n", "/////////////////////////////////////////// \n");
         Scanner scanner = new Scanner(System.in);
-        TaskManager test = new TaskManager();
-        String title;
-        String description;
-        int id;
-
-
-        Epic epic1 = new Epic("1.Эпик", "простой");
         test.pushEpic(epic1);
-
-        Subtask sub1 = new Subtask("1.1.Подзадача", "средняя");
-        Subtask sub2 = new Subtask("1.2.Подзадача", "тяжелее");
         test.pushSub(epic1, sub1);
         test.pushSub(epic1, sub2);
-
-        Epic epic2 = new Epic("2.Эпик", "простой");
-
-        Task task1 = new Task("1.Задание", "сложноватое");
-        Task task2 = new Task("2.Задание", "сложноватое");
         test.pushTask(task1);
         test.pushTask(task2);
+
+        int id;
 
         System.out.println("\nПроверка метода getAllTasks():");
         test.printAllTasks();

@@ -10,12 +10,13 @@ public class TaskManager<T> {
     private String titleManager;
     private String descriptionManager;
 
-    private final HashMap<Integer, T> taskMaster;
+    public final HashMap<Integer, T> taskMaster;
 
     public TaskManager() {
         taskMaster = new HashMap<>();
         id = 0;
     }
+
 
     public void delete(Integer id) {
         if (taskMaster.containsKey(id)) {
@@ -69,11 +70,12 @@ public class TaskManager<T> {
         if (taskMaster.containsKey(ident)) {
             if (taskMaster.get(ident) instanceof Task || taskMaster.get(ident) instanceof Epic) {
                 return taskMaster.get(ident);
-            } else {
-                for (T epic : taskMaster.values()) {
-                    if (((Epic) epic).getSubMap().containsKey(ident)) {
-                        return (T) ((Epic) epic).getSubMap().get(ident);
-                    }
+            }
+
+        } else {
+            for (T epic : taskMaster.values()) {
+                if (epic instanceof Epic && ((Epic) epic).getSubMap().containsKey(ident)) {
+                    return (T) ((Epic) epic).getSubMap().get(ident);
                 }
             }
         }

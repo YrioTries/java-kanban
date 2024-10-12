@@ -18,8 +18,6 @@ public class Task {
     public void setId(Integer id){
         this.id = id;
     }
-    public boolean correctClass() {
-        return this.getClass() == Task.class; }
     public Status getStatus() {
         return status;
     }
