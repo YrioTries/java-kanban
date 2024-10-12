@@ -15,9 +15,7 @@ public class Task {
         this.status = Status.NEW;
     }
 
-    public void setId(Integer id){
-        this.id = id;
-    }
+    public void setId(Integer id){this.id = id;}
     public Status getStatus() {
         return status;
     }
@@ -44,6 +42,11 @@ public class Task {
 
     public int getId() {
         return id;
+    }
+
+    @Override
+    public String toString(){
+        return "Task: " + this.getTitle() + " [id: " + this.getId() + ", status: " + this.getStatus() + "]";
     }
 
     @Override

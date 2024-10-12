@@ -6,11 +6,14 @@ import Classes.Task;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class InMemoryTaskManagerTest<T> {
 
-    static InMemoryTaskManager test = new InMemoryTaskManager();
+    static InMemoryTaskManager<Task> test = new InMemoryTaskManager<>();
 
     static Epic epic1 = new Epic("1.Эпик", "простой");
     static Subtask sub1 = new Subtask("1.1.Подзадача", "средняя");
@@ -77,6 +80,70 @@ public class InMemoryTaskManagerTest<T> {
         test.pushTask(task1);
         test.pushTask(task2);
     }
+
+    ///////////////////////////////////////////   Task Test   ///////////////////////////////////////////
+
+    @Test
+    public void shouldBeEqualsTwoSubsWithSameId(){
+        assertNotEquals(sub1, sub2);
+
+        sub1.setId(sub2.getId());
+
+        assertNotNull(sub1);
+        assertNotNull(sub2);
+
+        assertEquals(sub1, sub2);
+    }
+
+    @Test
+    public void shouldBeEqualsTwoTasksWithSameId(){
+        assertNotEquals(task1, task2);
+
+        task1.setId(task2.getId());
+
+        assertNotNull(task1);
+        assertNotNull(task2);
+
+        assertEquals(task1, task2);
+    }
+
+    @Test
+    public void shouldBeEqualsTwoEpicsWithSameId(){
+        assertNotEquals(epic1, epic2, "Эпики изначально равны друг другу");
+
+        epic1.setId(epic2.getId());
+
+        assertNotNull(epic1);
+        assertNotNull(epic2);
+
+        assertEquals(epic1, epic2);
+    }
+
+    @Test
+    void addNewTask() {
+        Task task3 = new Task("Test addNewTask", "Test addNewTask description");
+        test.pushTask(task3);
+
+        Task savedTask = test.serchTask(task3.getId());
+        assertNotNull(savedTask, "Задача не найдена.");
+        assertEquals(task3, savedTask, "Задачи не совпадают.");
+
+
+        final ArrayList<Task> tasks = test.getTaskList();
+
+        assertNotNull(tasks, "Задачи не возвращаются.");
+        assertEquals(3, tasks.size(), "Неверное количество задач.");
+        assertEquals(task3, tasks.get(2), "Задачи не совпадают.");
+    }
+
+    @Test
+    void add() {
+        test.manager.getDefaultHistory().add(task1);
+        final ArrayList<Task> history = test.manager.getDefaultHistory().getHistory();
+        assertNotNull(history, "История пустая.");
+        assertEquals(8, history.size(), "История неполная.");
+    }
+
     /////////////////////////////////////////// serchTask(id) ///////////////////////////////////////////
     @Test
     public void shouldBeEqualsEpic1() {
