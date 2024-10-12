@@ -17,7 +17,6 @@ public class TaskManager<T> {
         id = 0;
     }
 
-
     public void delete(Integer id) {
         if (taskMaster.containsKey(id)) {
             if (taskMaster.get(id) instanceof Task || taskMaster.get(id) instanceof Epic) {
