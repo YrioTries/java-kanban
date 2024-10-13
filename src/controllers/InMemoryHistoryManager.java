@@ -16,7 +16,10 @@ public class InMemoryHistoryManager<T> implements HistoryManager<T> {
     }
 
     @Override
-    public ArrayList<T> getHistory() {return historyList;}
+    public ArrayList<T> getHistory() {
+        ArrayList<T> history = new ArrayList<>(historyList);
+        return history;
+    }
 
     private void historyControl(){
         while (historyList.size() > 10){

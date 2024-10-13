@@ -7,20 +7,19 @@ import java.util.ArrayList;
 
 public class InMemoryTaskManager<T> implements TaskManager<T> {
     private int id;
-    private String titleManager;
-    private String descriptionManager;
 
-    public Managers<T> manager;
+// Я сделая рефакторинг во время двухнедельного перерыва, просто боюсь запутаться и не успеть до завтра
+    private final HistoryManager<T> historyManager;
     public  HashMap<Integer, T> taskMaster;
 
     public InMemoryTaskManager() {
-        manager = new Managers<>();
+        historyManager = Managers.getDefaultHistory();
         taskMaster = new HashMap<>();
         id = 0;
     }
 
     @Override
-    public ArrayList<T> getHistory() {return manager.getDefaultHistory().getHistory();}
+    public ArrayList<T> getHistory() {return historyManager.getHistory();}
 
     public HashMap<Integer, T> getTaskMaster(){
         return taskMaster;
@@ -53,7 +52,6 @@ public class InMemoryTaskManager<T> implements TaskManager<T> {
         task.setId(ident);
         taskMaster.put(task.getId(), (T) task);
 
-        manager.getDefaultHistory().add((T) task);
         return task.getId();
     }
 
@@ -63,7 +61,6 @@ public class InMemoryTaskManager<T> implements TaskManager<T> {
         epic.setId(ident);
         taskMaster.put(epic.getId(), (T) epic);
 
-        manager.getDefaultHistory().add((T) epic);
         return epic.getId();
     }
 
@@ -77,7 +74,6 @@ public class InMemoryTaskManager<T> implements TaskManager<T> {
 
         changeStatusEpic(epic);
 
-        manager.getDefaultHistory().add((T) sub);
         return sub.getId();
     }
 
@@ -93,14 +89,14 @@ public class InMemoryTaskManager<T> implements TaskManager<T> {
     public T serchTask(int searchingId) {
         if (taskMaster.containsKey(searchingId)) {
             if (taskMaster.get(searchingId) instanceof Task || taskMaster.get(searchingId) instanceof Epic) {
-                manager.getDefaultHistory().add(taskMaster.get(searchingId));
+                historyManager.add(taskMaster.get(searchingId));
                 return taskMaster.get(searchingId);
             }
 
         } else {
             for (T epic : taskMaster.values()) {
                 if (epic instanceof Epic && ((Epic) epic).getSubMap().containsKey(searchingId)) {
-                    manager.getDefaultHistory().add((T) ((Epic) epic).getSubMap().get(searchingId));
+                    historyManager.add((T) ((Epic) epic).getSubMap().get(searchingId));
                     return (T) ((Epic) epic).getSubMap().get(searchingId);
                 }
             }

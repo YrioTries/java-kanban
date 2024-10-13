@@ -13,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class InMemoryTaskManagerTest<T> {
 
+    private final HistoryManager historyManager = Managers.getDefaultHistory();
     static InMemoryTaskManager<Task> test = new InMemoryTaskManager<>();
 
     static Epic epic1 = new Epic("1.Эпик", "простой");
@@ -139,10 +140,10 @@ public class InMemoryTaskManagerTest<T> {
 
     @Test
     void add() {
-        test.manager.getDefaultHistory().add(task1);
-        final ArrayList<Task> history = test.manager.getDefaultHistory().getHistory();
+        historyManager.add(task1);
+        final ArrayList<Task> history = historyManager.getHistory();
         assertNotNull(history, "История пустая.");
-        assertEquals(10, history.size(), "История неполная.");
+        assertEquals(1, history.size(), "История неполная.");
     }
 
     /////////////////////////////////////////// serchTask(id) ///////////////////////////////////////////
