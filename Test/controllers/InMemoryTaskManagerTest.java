@@ -110,13 +110,14 @@ public class InMemoryTaskManagerTest<T> {
     @Test
     public void shouldBeEqualsTwoEpicsWithSameId(){
         assertNotEquals(epic1, epic2, "Эпики изначально равны друг другу");
-
+        int id = epic1.getId();
         epic1.setId(epic2.getId());
 
         assertNotNull(epic1);
         assertNotNull(epic2);
 
         assertEquals(epic1, epic2);
+        epic1.setId(id);
     }
 
     @Test
@@ -141,7 +142,7 @@ public class InMemoryTaskManagerTest<T> {
         test.manager.getDefaultHistory().add(task1);
         final ArrayList<Task> history = test.manager.getDefaultHistory().getHistory();
         assertNotNull(history, "История пустая.");
-        assertEquals(8, history.size(), "История неполная.");
+        assertEquals(10, history.size(), "История неполная.");
     }
 
     /////////////////////////////////////////// serchTask(id) ///////////////////////////////////////////

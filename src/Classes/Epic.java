@@ -21,6 +21,6 @@ public class Epic extends Task{
 
     @Override
     public String toString(){
-        return "Epic: " + this.getTitle() + " [id: " + this.getId() + ", status: " + this.getStatus() + "number of subs:" + getSubMap().size() + "]";
+        return "Epic: " + this.getTitle() + " [id:" + this.getId() + ", status:" + this.getStatus() + ", number of subs:" + getSubMap().size() + "]";
     }
 }
