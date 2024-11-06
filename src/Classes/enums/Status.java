@@ -1,4 +1,4 @@
-package Classes;
+package Classes.enums;
 
 public enum Status {
     NEW,

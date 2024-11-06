@@ -1,5 +1,8 @@
 package Classes;
 
+import Classes.enums.Class;
+import Classes.enums.Status;
+
 import java.util.Objects;
 
 public class Task {
@@ -14,7 +17,7 @@ public class Task {
         this.status = Status.NEW;
     }
 
-    public Class getTaskClass(){
+    public Classes.enums.Class getTaskClass(){
         return Class.TASK;
     }
 

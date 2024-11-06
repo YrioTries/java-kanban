@@ -1,5 +1,7 @@
 package Classes;
 
+import Classes.enums.Class;
+
 public class Subtask extends Task{
     private int motherId;
     public Subtask(String title, String description) {
@@ -7,7 +9,7 @@ public class Subtask extends Task{
     }
 
     @Override
-    public Class getTaskClass(){
+    public Classes.enums.Class getTaskClass(){
         return Class.SUBTUSK;
     }
 

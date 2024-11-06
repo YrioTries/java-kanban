@@ -3,6 +3,8 @@ package controllers;
 import Classes.Epic;
 import Classes.Subtask;
 import Classes.Task;
+import Classes.enums.Class;
+import controllers.interfaces.HistoryManager;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -11,10 +13,10 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class InMemoryTaskManagerTest<T> {
+public class InMemoryTaskManagerTest {
 
     private final HistoryManager historyManager = Managers.getDefaultHistory();
-    static InMemoryTaskManager<Task> test = new InMemoryTaskManager<>();
+    static InMemoryTaskManager test = new InMemoryTaskManager();
 
     static Epic epic1 = new Epic("1.Эпик", "простой");
     static Subtask sub1 = new Subtask("1.1.Подзадача", "средняя");
@@ -42,7 +44,7 @@ public class InMemoryTaskManagerTest<T> {
                     }
                     System.out.println();
 
-                } else if (test.taskMaster.get(i) instanceof Task) {
+                } else if (test.taskMaster.get(i).getTaskClass() == Class.TASK) {
                     Task task = (Task) test.taskMaster.get(i);
                     System.out.println("Задача: " + task.getTitle() + " c id: " + task.getId()
                             + " и статусом: " + task.getStatus());
@@ -69,7 +71,6 @@ public class InMemoryTaskManagerTest<T> {
         }
         System.out.println("\n////////////////////////////////////////////////////////////////////////");
     }
-
 
     @BeforeAll
     public static void pushTasks(){
@@ -167,8 +168,8 @@ public class InMemoryTaskManagerTest<T> {
 
     @Test
     public void shouldBeEqualsSub1() {
-        Integer id = sub1.getId();
-        Object result = test.serchTask(id);
+        int id = sub1.getId();
+        Object result = test.serchSubtask(id);
 
         assertNotNull(result);
         assertEquals(sub1, result);
@@ -213,7 +214,7 @@ public class InMemoryTaskManagerTest<T> {
 
     @Test
     public void shouldNotBeEquals(){
-        Integer id = sub3.getId();
+        int id = sub3.getId();
         Integer result = test.getMotherID(id);
 
         assertNotNull(result);
@@ -222,7 +223,7 @@ public class InMemoryTaskManagerTest<T> {
 
     @Test
     public void shouldBeNull(){
-        int id = 15;
+        int id = 150;
         Integer result = test.getMotherID(id);
 
         assertNull(result);

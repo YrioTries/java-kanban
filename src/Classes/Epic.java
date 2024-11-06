@@ -1,6 +1,6 @@
 package Classes;
 
-import org.junit.jupiter.api.Test;
+import Classes.enums.Class;
 
 import java.util.HashMap;
 
@@ -13,7 +13,7 @@ public class Epic extends Task{
      }
 
      @Override
-     public Class getTaskClass(){
+     public Classes.enums.Class getTaskClass(){
          return Class.EPIC;
      }
 

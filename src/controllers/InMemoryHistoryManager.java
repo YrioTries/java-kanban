@@ -1,23 +1,26 @@
 package controllers;
 
+import Classes.Task;
+import controllers.interfaces.HistoryManager;
+
 import java.util.ArrayList;
 
-public class InMemoryHistoryManager<T> implements HistoryManager<T> {
-    private ArrayList<T> historyList;
+public class InMemoryHistoryManager implements HistoryManager {
+    private ArrayList<Task> historyList;
 
     public InMemoryHistoryManager(){
-        historyList = new ArrayList<T>(10);
+        historyList = new ArrayList<Task>(10);
     }
 
     @Override
-    public void add(T task) {
+    public void add(Task task) {
         historyList.add(task);
         historyControl();
     }
 
     @Override
-    public ArrayList<T> getHistory() {
-        ArrayList<T> history = new ArrayList<>(historyList);
+    public ArrayList<Task> getHistory() {
+        ArrayList<Task> history = new ArrayList<>(historyList);
         return history;
     }
 

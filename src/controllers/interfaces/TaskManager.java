@@ -1,14 +1,14 @@
-package controllers;
+package controllers.interfaces;
 
 import Classes.Epic;
-import Classes.Status;
+import Classes.enums.Status;
 import Classes.Subtask;
 import Classes.Task;
 
 import java.util.ArrayList;
 
-public interface TaskManager<Tasks> {
-    ArrayList<Tasks> getHistory();
+public interface TaskManager {
+    ArrayList<Task> getHistory();
 
     ArrayList<Subtask> getSubtaskList();
 
@@ -35,6 +35,8 @@ public interface TaskManager<Tasks> {
     Epic serchEpic(int searchingId);
 
     Task serchTask(int searchingId);
+
+    Subtask serchSubtask(int searchingId);
 
     ArrayList<Task> getTaskList();
 

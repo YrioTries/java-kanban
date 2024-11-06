@@ -1,4 +1,5 @@
 import Classes.*;
+import Classes.enums.Status;
 import controllers.InMemoryTaskManager;
 import org.junit.jupiter.api.Test;
 
