@@ -176,7 +176,7 @@ public class InMemoryTaskManagerTest<T> {
 
     @Test
     public void shouldBeEqualsNull() {
-        int id = 15;
+        int id = 100;
         Object result = test.serchTask(id);
 
         assertNull(result);

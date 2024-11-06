@@ -6,6 +6,11 @@ public class Subtask extends Task{
         super(title, description);
     }
 
+    @Override
+    public Class getTaskClass(){
+        return Class.SUBTUSK;
+    }
+
     public void setMotherId(Epic epic){
         motherId = epic.getId();
     }

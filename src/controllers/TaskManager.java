@@ -7,14 +7,12 @@ import Classes.Task;
 
 import java.util.ArrayList;
 
-public interface TaskManager<T> {
-    ArrayList<T> getHistory();
+public interface TaskManager<Tasks> {
+    ArrayList<Tasks> getHistory();
 
     ArrayList<Subtask> getSubtaskList();
 
     ArrayList<Epic> getEpicList();
-
-    ArrayList<Task> getTaskList();
 
     void delete(Integer id);
 
@@ -34,7 +32,11 @@ public interface TaskManager<T> {
 
     int pushSub(Epic epic, Subtask sub);
 
-    T serchTask(int ident);
+    Epic serchEpic(int searchingId);
+
+    Task serchTask(int searchingId);
+
+    ArrayList<Task> getTaskList();
 
     Integer getMotherID(Integer id);
 }

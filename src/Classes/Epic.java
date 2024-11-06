@@ -12,6 +12,11 @@ public class Epic extends Task{
          epicSubtasks =  new HashMap<>();
      }
 
+     @Override
+     public Class getTaskClass(){
+         return Class.EPIC;
+     }
+
      public HashMap<Integer, Subtask> getSubMap(){
          return epicSubtasks;
      }

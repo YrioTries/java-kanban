@@ -9,13 +9,17 @@ public class Task {
     private Status status;
 
     public Task(String title, String description){
-
         this.title = title;
         this.description = description;
         this.status = Status.NEW;
     }
 
+    public Class getTaskClass(){
+        return Class.TASK;
+    }
+
     public void setId(Integer id){this.id = id;}
+
     public Status getStatus() {
         return status;
     }
