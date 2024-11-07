@@ -32,11 +32,12 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void delete(Integer id) {
         if (taskMaster.containsKey(id)) {
-            if (((Task)taskMaster.get(id)).getTaskClass() == Class.TASK || ((Epic)taskMaster.get(id)).getTaskClass() == Class.EPIC) {
+            if (taskMaster.get(id).getTaskClass() == Class.TASK || taskMaster.get(id).getTaskClass() == Class.EPIC) {
                 taskMaster.remove(id);
+            } else {
+                ((Epic)serchTask(getMotherID(id))).getSubMap().remove(id);
             }
-        } else {
-            ((Epic)serchTask(getMotherID(id))).getSubMap().remove(id);
+            historyManager.remove(id);
         }
     }
 
