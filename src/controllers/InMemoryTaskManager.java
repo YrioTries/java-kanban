@@ -12,7 +12,6 @@ import java.util.ArrayList;
 public class InMemoryTaskManager implements TaskManager {
     private int id;
 
-// Я сделая рефакторинг во время двухнедельного перерыва, просто боюсь запутаться и не успеть до завтра
     private final HistoryManager historyManager;
     public  HashMap<Integer, Task> taskMaster;
 
@@ -23,7 +22,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public ArrayList<Task> getHistory() {return historyManager.getHistory();}
+    public ArrayList<Task> getHistory() {return (ArrayList<Task>) historyManager.getHistory();}
 
     public HashMap<Integer, Task> getTaskMaster(){
         return taskMaster;
@@ -33,11 +32,13 @@ public class InMemoryTaskManager implements TaskManager {
     public void delete(Integer id) {
         if (taskMaster.containsKey(id)) {
             if (taskMaster.get(id).getTaskClass() == Class.TASK || taskMaster.get(id).getTaskClass() == Class.EPIC) {
+                historyManager.add(taskMaster.remove(id));
                 taskMaster.remove(id);
             } else {
+                historyManager.add(((Epic)serchTask(getMotherID(id))).getSubMap().remove(id));
                 ((Epic)serchTask(getMotherID(id))).getSubMap().remove(id);
             }
-            historyManager.remove(id);
+
         }
     }
 
@@ -113,7 +114,7 @@ public class InMemoryTaskManager implements TaskManager {
     public Epic serchEpic(int searchingId) {
         if (taskMaster.containsKey(searchingId)) {
             if (taskMaster.get(searchingId).getTaskClass() == Class.EPIC) {
-                historyManager.add((Task) taskMaster.get(searchingId));
+                historyManager.add(taskMaster.get(searchingId));
                 return (Epic) taskMaster.get(searchingId);
             }
         }
@@ -134,11 +135,10 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task serchTask(int searchingId) {
         if (taskMaster.containsKey(searchingId)) {
-            if (((Task) taskMaster.get(searchingId)).getTaskClass() == Class.TASK || ((Epic) taskMaster.get(searchingId)).getTaskClass() == Class.EPIC) {
+            if ((taskMaster.get(searchingId)).getTaskClass() == Class.TASK || (taskMaster.get(searchingId)).getTaskClass() == Class.EPIC) {
                 historyManager.add(taskMaster.get(searchingId));
                 return (Task) taskMaster.get(searchingId);
             }
-
         }
         return null;
     }

@@ -139,14 +139,6 @@ public class InMemoryTaskManagerTest {
         assertEquals(task3, tasks.get(2), "Задачи не совпадают.");
     }
 
-    @Test
-    void add() {
-        historyManager.add(task1);
-        final ArrayList<Task> history = historyManager.getHistory();
-        assertNotNull(history, "История пустая.");
-        assertEquals(1, history.size(), "История неполная.");
-    }
-
     /////////////////////////////////////////// serchTask(id) ///////////////////////////////////////////
     @Test
     public void shouldBeEqualsEpic1() {

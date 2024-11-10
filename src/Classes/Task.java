@@ -60,8 +60,9 @@ public class Task {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (((Task) o).getId() == this.getId()) return true;
         Task task = (Task) o;
+        if (task.getId() != this.getId()) return false;
+
         return Objects.equals(title, task.title) && Objects.equals(description, task.description) && status == task.status;
     }
 
