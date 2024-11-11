@@ -60,10 +60,34 @@ class HandleLinkedHashMap {
 
     public void addLast(Task task) {
         if (handleLinkedMap.containsKey(task.getId())){
-            removeNodeId(task.getId());
+            Node nodeNeedToMove = handleLinkedMap.get(task.getId());
+
+            Node prevMove = nodeNeedToMove.prev;
+            Node nextMove = nodeNeedToMove.next;
+            if (prevMove != null && nextMove != null && size != 0){
+                prevMove.next = nextMove;
+                nextMove.prev = prevMove;
+            }
+
+            if (nodeNeedToMove == head) {
+                head = nextMove;
+            }
+
+            if (tail != null && size != 1) tail.next = nodeNeedToMove;
+            nodeNeedToMove.prev = tail;
+            nodeNeedToMove.next = null;
+
+            if (size == 0) {
+                head = tail = nodeNeedToMove;
+            } else {
+                tail = nodeNeedToMove;
+            }
+
+            return;
         }
         //final Node oldTail = tail;
         Node newNode = new Node(tail, task, null);
+        handleLinkedMap.put(task.getId(), newNode);
 
         if (tail != null) tail.next = newNode;
 
@@ -121,7 +145,7 @@ class HandleLinkedHashMap {
     }
 
     public void removeNodeId(int id) {
-        if (!handleLinkedMap.containsKey(id)){
+        if (handleLinkedMap.containsKey(id)){
             return;
         }
         Node needToDel = handleLinkedMap.get(id);
