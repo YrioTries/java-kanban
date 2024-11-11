@@ -1,19 +1,19 @@
-package Classes;
+package classes;
 
-import Classes.enums.Class;
+import classes.enums.Class;
 
 import java.util.HashMap;
 
-public class Epic extends Task{
+public class Epic extends Task {
     private HashMap<Integer, Subtask> epicSubtasks;
 
-     public Epic(String title, String description){
+     public Epic(String title, String description) {
          super(title, description);
          epicSubtasks =  new HashMap<>();
      }
 
      @Override
-     public Classes.enums.Class getTaskClass(){
+     public classes.enums.Class getTaskClass(){
          return Class.EPIC;
      }
 
@@ -25,7 +25,7 @@ public class Epic extends Task{
      }
 
     @Override
-    public String toString(){
+    public String toString() {
         return "Epic: " + this.getTitle() + " [id:" + this.getId() + ", status:" + this.getStatus() + ", number of subs:" + getSubMap().size() + "]";
     }
 }

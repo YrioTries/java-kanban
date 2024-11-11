@@ -1,7 +1,7 @@
-package Classes;
+package classes;
 
-import Classes.enums.Class;
-import Classes.enums.Status;
+import classes.enums.Class;
+import classes.enums.Status;
 
 import java.util.Objects;
 
@@ -11,17 +11,17 @@ public class Task {
     private String description;
     private Status status;
 
-    public Task(String title, String description){
+    public Task(String title, String description) {
         this.title = title;
         this.description = description;
         this.status = Status.NEW;
     }
 
-    public Classes.enums.Class getTaskClass(){
+    public classes.enums.Class getTaskClass(){
         return Class.TASK;
     }
 
-    public void setId(Integer id){this.id = id;}
+    public void setId(Integer id) { this.id = id; }
 
     public Status getStatus() {
         return status;
@@ -52,7 +52,7 @@ public class Task {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return "Task: " + this.getTitle() + " [id: " + this.getId() + ", status: " + this.getStatus() + "]";
     }
 

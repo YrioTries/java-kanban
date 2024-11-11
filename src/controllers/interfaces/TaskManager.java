@@ -1,9 +1,9 @@
 package controllers.interfaces;
 
-import Classes.Epic;
-import Classes.enums.Status;
-import Classes.Subtask;
-import Classes.Task;
+import classes.Epic;
+import classes.enums.Status;
+import classes.Subtask;
+import classes.Task;
 
 import java.util.ArrayList;
 

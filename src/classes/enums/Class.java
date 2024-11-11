@@ -1,4 +1,4 @@
-package Classes.enums;
+package classes.enums;
 
 public enum Class {
     TASK,

@@ -1,4 +1,4 @@
-package Classes;
+package classes;
 
 import java.util.Objects;
 
@@ -14,7 +14,7 @@ public class Node {
     }
 
     @Override
-    public boolean equals(Object o){
+    public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || this.getClass() != o.getClass()) return false;
         Node node = (Node) o;

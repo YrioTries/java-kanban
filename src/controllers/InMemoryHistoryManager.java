@@ -1,17 +1,17 @@
 package controllers;
 
-import Classes.Task;
+import classes.Task;
 import controllers.interfaces.HistoryManager;
 
 import java.util.*;
 
-import Classes.Node;
+import classes.Node;
 
 public class InMemoryHistoryManager implements HistoryManager {
     private HandleLinkedHashMap handleMap;
 
 
-    public InMemoryHistoryManager(){
+    public InMemoryHistoryManager() {
         handleMap = new HandleLinkedHashMap();
     }
 
@@ -38,7 +38,7 @@ class HandleLinkedHashMap {
     private Node tail;
     private int size;
 
-    public HandleLinkedHashMap(){
+    public HandleLinkedHashMap() {
         handleLinkedMap = new HashMap<>();
         size = 0;
     }
@@ -113,7 +113,7 @@ class HandleLinkedHashMap {
         return tail.data;
     }
 
-    public void removeNode(int position){
+    public void removeNode(int position) {
         int w = 0;
         Node needToDel = head;
 
@@ -173,7 +173,7 @@ class HandleLinkedHashMap {
         return this.size;
     }
 
-    public ArrayList<Task> getTasks(){
+    public ArrayList<Task> getTasks() {
         if (head == null) return null;
         ArrayList<Task> tasks = new ArrayList<>();
         Node current = head;
@@ -186,7 +186,7 @@ class HandleLinkedHashMap {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         String res = "HandleLinkedList[size:" + size + "] [";
         Node pr = head;
 

@@ -1,9 +1,8 @@
 package controllers;
 
-import Classes.Epic;
-import Classes.Subtask;
-import Classes.Task;
-import Classes.enums.Class;
+import classes.Epic;
+import classes.Subtask;
+import classes.Task;
 import controllers.interfaces.HistoryManager;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -28,7 +27,7 @@ public class InMemoryHystoryManagerTest {
     static Task task2 = new Task("2.Задание", "сложноватое");
 
     @BeforeAll
-    public static void pushTasks(){
+    public static void pushTasks() {
         test.pushEpic(epic1);
         test.pushSub(epic1, sub1);
         test.pushSub(epic1, sub2);
@@ -39,7 +38,7 @@ public class InMemoryHystoryManagerTest {
     }
 
     @Test
-    void HisorySizeNeedToBeFourAfterSerching () {
+    void HisorySizeNeedToBeFourAfterSerching() {
         test.serchTask(task1.getId());
         test.serchTask(task2.getId());
         test.serchEpic(epic2.getId());
