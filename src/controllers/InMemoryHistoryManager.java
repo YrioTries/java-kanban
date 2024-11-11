@@ -191,8 +191,8 @@ class HandleLinkedHashMap {
         String res = "HandleLinkedList[size:" + size() + "] [";
         Node pr = head;
 
-        for (int i = 0; i <= size(); i++){
-            if (i == size()){
+        while (pr != null){
+            if (pr.next == null){
                 res = pr.data + ". ";
             } else {
                 res = pr.data + ", ";
