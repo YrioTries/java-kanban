@@ -28,11 +28,13 @@ public class InMemoryTaskManager implements TaskManager {
     public ArrayList<Task> getHistory() {
 
         return (ArrayList<Task>) historyManager.getHistory();
+
     }
 
     public HashMap<Integer, Task> getTaskMaster() {
 
         return taskMaster;
+
     }
 
     @Override
@@ -43,11 +45,13 @@ public class InMemoryTaskManager implements TaskManager {
             if (taskMaster.get(id).getTaskClass() == Class.TASK || taskMaster.get(id).getTaskClass() == Class.EPIC) {
 
                 historyManager.add(taskMaster.remove(id));
+
                 taskMaster.remove(id);
 
             } else {
 
                 historyManager.add(((Epic)serchTask(getMotherID(id))).getSubMap().remove(id));
+
                 ((Epic)serchTask(getMotherID(id))).getSubMap().remove(id);
             }
 
@@ -63,7 +67,9 @@ public class InMemoryTaskManager implements TaskManager {
             if (epic.getTaskClass() == Class.EPIC) {
 
                 ((Epic) epic).getSubMap().clear();
+
                 changeStatusEpic((Epic) epic);
+
             }
 
         }
@@ -80,6 +86,7 @@ public class InMemoryTaskManager implements TaskManager {
         taskMaster.put(task.getId(), task);
 
         return task.getId();
+
     }
 
     @Override
@@ -92,6 +99,7 @@ public class InMemoryTaskManager implements TaskManager {
         taskMaster.put(epic.getId(), epic);
 
         return epic.getId();
+
     }
 
     @Override
@@ -108,6 +116,7 @@ public class InMemoryTaskManager implements TaskManager {
         changeStatusEpic(epic);
 
         return sub.getId();
+
     }
 
     @Override
@@ -115,6 +124,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (task != null) {
 
             taskMaster.put(task.getId(), task);
+
         }
 
     }
@@ -126,6 +136,7 @@ public class InMemoryTaskManager implements TaskManager {
             if (taskMaster.get(searchingId).getTaskClass() == Class.EPIC) {
 
                 historyManager.add(taskMaster.get(searchingId));
+
                 return (Epic) taskMaster.get(searchingId);
             }
         }
@@ -139,9 +150,11 @@ public class InMemoryTaskManager implements TaskManager {
         for (Task task : taskMaster.values()) {
 
             Epic epic = (Epic) task;
+
             if (epic.getTaskClass() == Class.EPIC && epic.getSubMap().containsKey(searchingId)) {
 
                 historyManager.add(epic.getSubMap().get(searchingId));
+
                 return epic.getSubMap().get(searchingId);
             }
         }
@@ -157,6 +170,7 @@ public class InMemoryTaskManager implements TaskManager {
             if ((taskMaster.get(searchingId)).getTaskClass() == Class.TASK || (taskMaster.get(searchingId)).getTaskClass() == Class.EPIC) {
 
                 historyManager.add(taskMaster.get(searchingId));
+
                 return (Task) taskMaster.get(searchingId);
             }
         }
@@ -170,10 +184,13 @@ public class InMemoryTaskManager implements TaskManager {
         ArrayList<Subtask> subTusk = new ArrayList<>();
 
         for (Task tasks : taskMaster.values()) {
+
             Epic epic = (Epic) tasks;
 
             if (epic.getTaskClass() == Class.EPIC) {
+
                 subTusk.addAll(epic.getSubMap().values());
+
             }
         }
 
@@ -190,10 +207,13 @@ public class InMemoryTaskManager implements TaskManager {
             if (taskMaster.containsKey(i)) {
 
                 if (taskMaster.get(i).getTaskClass() == Class.EPIC) {
+
                     tasks.add((Epic)(taskMaster.get(i)));
+
                 }
             }
         }
+
         return tasks;
 
     }
@@ -208,11 +228,14 @@ public class InMemoryTaskManager implements TaskManager {
             if (taskMaster.containsKey(i)) {
 
                 if (taskMaster.get(i).getTaskClass() == Class.TASK) {
+
                     tasks.add(taskMaster.get(i));
+
                 }
 
             }
         }
+
         return tasks;
 
     }
@@ -221,12 +244,16 @@ public class InMemoryTaskManager implements TaskManager {
     public void changeStatusSub(Status status, Subtask sub) {
 
         sub.setStatus(status);
+
         changeStatusEpic((Epic) serchTask(getMotherID(sub.getId())));
+
     }
 
     @Override
     public void changeStatusTask(Status status, Task task) {
+
         task.setStatus(status);
+
     }
 
     @Override
@@ -238,22 +265,30 @@ public class InMemoryTaskManager implements TaskManager {
         for (Subtask sub : epic.getSubMap().values()) {
 
             if (sub.getStatus() != Status.NEW) {
+
                 setNew = false;
+
             }
 
             if (sub.getStatus() != Status.DONE) {
+
                 setDone = false;
+
             }
 
         }
 
         if (setDone) {
+
             epic.setStatus(Status.DONE);
 
         } else if (setNew) {
+
             epic.setStatus(Status.NEW);
 
+
         } else {
+
             epic.setStatus(Status.IN_PROGRESS);
 
         }
@@ -266,11 +301,13 @@ public class InMemoryTaskManager implements TaskManager {
         for (Task ep : getTaskMaster().values()) {
 
             if (ep.getTaskClass() == Class.EPIC) {
+
                 Epic epic = (Epic) ep;
 
                 for (Subtask subtask : epic.getSubMap().values()) {
 
                     if (id == subtask.getId()) {
+
                         return epic.getId();
                     }
 
@@ -279,6 +316,7 @@ public class InMemoryTaskManager implements TaskManager {
             }
 
         }
+
         return null;
 
     }
