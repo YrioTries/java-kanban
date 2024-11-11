@@ -11,7 +11,7 @@ public class Task {
     private String description;
     private Status status;
 
-    public Task(String title, String description) {
+    public Task(String title, String description){
         this.title = title;
         this.description = description;
         this.status = Status.NEW;
@@ -21,7 +21,7 @@ public class Task {
         return Class.TASK;
     }
 
-    public void setId(Integer id) { this.id = id; }
+    public void setId(Integer id){this.id = id;}
 
     public Status getStatus() {
         return status;
@@ -52,7 +52,7 @@ public class Task {
     }
 
     @Override
-    public String toString() {
+    public String toString(){
         return "Task: " + this.getTitle() + " [id: " + this.getId() + ", status: " + this.getStatus() + "]";
     }
 
@@ -60,9 +60,8 @@ public class Task {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
+        if (((Task) o).getId() == this.getId()) return true;
         Task task = (Task) o;
-        if (task.getId() != this.getId()) return false;
-
         return Objects.equals(title, task.title) && Objects.equals(description, task.description) && status == task.status;
     }
 
