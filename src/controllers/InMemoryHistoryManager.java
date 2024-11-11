@@ -8,7 +8,6 @@ import java.util.*;
 public class InMemoryHistoryManager implements HistoryManager {
     private HandleLinkedHashMap handleMap;
 
-
     public InMemoryHistoryManager() {
         handleMap = new HandleLinkedHashMap();
     }
@@ -30,8 +29,7 @@ public class InMemoryHistoryManager implements HistoryManager {
 }
 
 class HandleLinkedHashMap {
-    public class Node {
-
+    static class Node {
         public Task data;
         public Node next;
         public Node prev;
@@ -69,6 +67,7 @@ class HandleLinkedHashMap {
             Node nodeNeedToMove = handleLinkedMap.get(task.getId());
 
             Node prevMove = nodeNeedToMove.prev;
+
             Node nextMove = nodeNeedToMove.next;
 
             if (nodeNeedToMove == head) {
@@ -79,10 +78,13 @@ class HandleLinkedHashMap {
                 prevMove.next = nextMove;
                 nextMove.prev = prevMove;
             }
+
             nodeNeedToMove.prev = tail;
+
             nodeNeedToMove.next = null;
 
             tail.next = nodeNeedToMove;
+
             tail = nodeNeedToMove;
 
             return;

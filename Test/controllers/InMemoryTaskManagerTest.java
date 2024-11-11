@@ -122,6 +122,10 @@ public class InMemoryTaskManagerTest {
         epic1.setId(id);
     }
 
+
+    /////////////////////////////////////////// serchTask(id) ///////////////////////////////////////////
+
+
     @Test
     void addNewTask() {
         Task task3 = new Task("Test addNewTask", "Test addNewTask description");
@@ -139,10 +143,9 @@ public class InMemoryTaskManagerTest {
         assertEquals(task3, tasks.get(2), "Задачи не совпадают.");
     }
 
-    /////////////////////////////////////////// serchTask(id) ///////////////////////////////////////////
     @Test
     public void shouldBeEqualsEpic1() {
-        Integer id = epic1.getId();
+        int id = epic1.getId();
         Object result = test.serchTask(id);
 
         assertNotNull(result);
@@ -151,7 +154,7 @@ public class InMemoryTaskManagerTest {
 
     @Test
     public void shouldNotBeEqualsEpic2() {
-        Integer id = epic2.getId();
+        int id = epic2.getId();
         Object result = test.serchTask(id);
 
         assertNotNull(result);

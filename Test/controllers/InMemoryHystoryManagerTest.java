@@ -81,4 +81,22 @@ public class InMemoryHystoryManagerTest {
         assertEquals(epic1, history.get(2));
         assertEquals(task2, history.get(3));
     }
+
+    @Test
+    void HisorySizeNeedToBeFourAfterRemoveTwoAndSearchFiveTimes() {
+        test.serchTask(task1.getId());
+        test.serchTask(task2.getId());
+        test.serchEpic(epic1.getId());
+        test.serchEpic(epic2.getId());
+
+        test.delete(epic1.getId());
+        test.delete(task2.getId());
+        test.serchSubtask(sub3.getId());
+
+        final ArrayList<Task> history = test.getHistory();
+        assertNotNull(history, "История пустая.");
+        assertEquals(5, history.size(), "История неполная.");
+        assertEquals(task2, history.get(3));
+        assertEquals(sub3, history.get(4)); // sub1 sub2
+    }
 }
