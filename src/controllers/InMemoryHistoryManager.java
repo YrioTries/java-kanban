@@ -145,13 +145,13 @@ class HandleLinkedHashMap {
     }
 
     public void removeNodeId(int id) {
-        if (handleLinkedMap.containsKey(id)){
-            return;
-        }
+
         Node needToDel = handleLinkedMap.get(id);
 
         Node prevDel = needToDel.prev;
         Node AfterDel = needToDel.next;
+
+        handleLinkedMap.remove(id);
 
         if (prevDel != null && AfterDel != null && size != 0) {
             prevDel.next = AfterDel;

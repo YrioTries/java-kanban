@@ -52,7 +52,7 @@ public class InMemoryHystoryManagerTest {
     }
 
     @Test
-    void HisorySizeNeedToBeFourAfterRemove () {
+    void HisorySizeNeedToBeFourAfterRemove() {
         test.serchTask(task1.getId());
         test.serchTask(task2.getId());
         test.serchEpic(epic2.getId());
