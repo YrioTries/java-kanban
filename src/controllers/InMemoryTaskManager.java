@@ -28,10 +28,16 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public ArrayList<Task> getHistory() { return (ArrayList<Task>) historyManager.getHistory(); }
+    public ArrayList<Task> getHistory() {
 
-    public HashMap<Integer, Task> getTaskMaster(){
+        return (ArrayList<Task>) historyManager.getHistory();
+
+    }
+
+    public HashMap<Integer, Task> getTaskMaster() {
+
         return taskMaster;
+
     }
 
     @Override
