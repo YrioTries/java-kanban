@@ -3,6 +3,7 @@ package classes;
 import java.util.Objects;
 
 public class Node {
+
     public Task data;
     public Node next;
     public Node prev;
@@ -15,8 +16,8 @@ public class Node {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || this.getClass() != o.getClass()) return false;
+        if(this == o) return true;
+        if(o == null || this.getClass() != o.getClass()) return false;
         Node node = (Node) o;
         return data.equals(node.data);
     }
