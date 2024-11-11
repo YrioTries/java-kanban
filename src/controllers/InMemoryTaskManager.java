@@ -39,6 +39,7 @@ public class InMemoryTaskManager implements TaskManager {
                 ((Epic)serchTask(getMotherID(id))).getSubMap().remove(id);
             }
         }
+
     }
 
     @Override
@@ -49,6 +50,7 @@ public class InMemoryTaskManager implements TaskManager {
                 changeStatusEpic((Epic) epic);
             }
         }
+
     }
 
     @Override
@@ -87,6 +89,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (task != null){
             taskMaster.put(task.getId(), task);
         }
+
     }
 
     @Override
@@ -98,6 +101,7 @@ public class InMemoryTaskManager implements TaskManager {
             }
         }
         return null;
+
     }
 
     @Override
@@ -110,6 +114,7 @@ public class InMemoryTaskManager implements TaskManager {
             }
         }
         return null;
+
     }
 
     @Override
@@ -121,6 +126,7 @@ public class InMemoryTaskManager implements TaskManager {
             }
         }
         return null;
+
     }
 
     @Override
@@ -133,6 +139,7 @@ public class InMemoryTaskManager implements TaskManager {
             }
         }
         return subTusk;
+
     }
 
     @Override
@@ -146,6 +153,7 @@ public class InMemoryTaskManager implements TaskManager {
             }
         }
         return tasks;
+
     }
 
     @Override
@@ -159,6 +167,7 @@ public class InMemoryTaskManager implements TaskManager {
             }
         }
         return tasks;
+
     }
 
     @Override
@@ -194,6 +203,7 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             epic.setStatus(Status.IN_PROGRESS);
         }
+
     }
 
     @Override
@@ -209,5 +219,6 @@ public class InMemoryTaskManager implements TaskManager {
             }
         }
         return null;
+
     }
 }
