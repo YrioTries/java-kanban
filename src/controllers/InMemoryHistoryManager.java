@@ -56,7 +56,7 @@ class HandleLinkedHashMap {
         }
     }
 
-    Map<Integer, Node> handleLinkedMap;
+    private Map<Integer, Node> handleLinkedMap;
     private Node head;
     private Node tail;
 

@@ -20,6 +20,7 @@ public class Epic extends Task{
      public HashMap<Integer, Subtask> getSubMap(){
          return epicSubtasks;
      }
+
      public Subtask getSubTask(int id){
          return epicSubtasks.get(id);
      }

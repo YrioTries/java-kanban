@@ -69,16 +69,16 @@ public class InMemoryHystoryManagerTest {
     void HisorySizeNeedToBeFourAfterRemoveTwoTimes() {
         test.serchTask(task1.getId());
         test.serchTask(task2.getId());
-        test.serchEpic(epic2.getId());
         test.serchEpic(epic1.getId());
+        test.serchEpic(epic2.getId());
 
-        test.delete(epic2.getId());
+        test.delete(epic1.getId());
         test.delete(task2.getId());
 
         final ArrayList<Task> history = test.getHistory();
         assertNotNull(history, "История пустая.");
         assertEquals(4, history.size(), "История неполная.");
-        assertEquals(epic2, history.get(2));
+        assertEquals(epic1, history.get(2));
         assertEquals(task2, history.get(3));
     }
 }
