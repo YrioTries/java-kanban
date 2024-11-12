@@ -1,15 +1,11 @@
 package controllers;
 
-import classes.Epic;
-import classes.Subtask;
-import classes.Task;
+import classes.*;
 import classes.enums.Class;
 import controllers.interfaces.HistoryManager;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
 import java.util.ArrayList;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
