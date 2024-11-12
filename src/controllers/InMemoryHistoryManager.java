@@ -6,6 +6,7 @@ import controllers.interfaces.HistoryManager;
 import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {
+
     private HandleLinkedHashMap handleMap;
 
     public InMemoryHistoryManager() {
@@ -29,7 +30,9 @@ public class InMemoryHistoryManager implements HistoryManager {
 }
 
 class HandleLinkedHashMap {
+
     static class Node {
+
         public Task data;
         public Node next;
         public Node prev;

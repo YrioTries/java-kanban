@@ -5,6 +5,7 @@ import classes.enums.Class;
 import java.util.HashMap;
 
 public class Epic extends Task{
+
     private HashMap<Integer, Subtask> epicSubtasks;
 
      public Epic(String title, String description){

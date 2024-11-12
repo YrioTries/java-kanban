@@ -13,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class InMemoryHystoryManagerTest {
+
     private final HistoryManager historyManager = Managers.getDefaultHistory();
     static InMemoryTaskManager test = new InMemoryTaskManager();
 

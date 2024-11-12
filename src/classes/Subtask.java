@@ -3,6 +3,7 @@ package classes;
 import classes.enums.Class;
 
 public class Subtask extends Task{
+
     private int motherId;
 
     public Subtask(String title, String description) {

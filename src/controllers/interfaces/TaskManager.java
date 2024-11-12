@@ -8,6 +8,7 @@ import classes.Task;
 import java.util.ArrayList;
 
 public interface TaskManager {
+
     ArrayList<Task> getHistory();
     ArrayList<Subtask> getSubtaskList();
     ArrayList<Epic> getEpicList();
