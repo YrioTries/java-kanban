@@ -1,8 +1,8 @@
 package controllers;
 
-import Classes.*;
-import Classes.enums.Class;
-import Classes.enums.Status;
+import classes.*;
+import classes.enums.Class;
+import classes.enums.Status;
 import controllers.interfaces.HistoryManager;
 import controllers.interfaces.TaskManager;
 
@@ -10,9 +10,8 @@ import java.util.HashMap;
 import java.util.ArrayList;
 
 public class InMemoryTaskManager implements TaskManager {
-    private int id;
 
-// Я сделая рефакторинг во время двухнедельного перерыва, просто боюсь запутаться и не успеть до завтра
+    private int id;
     private final HistoryManager historyManager;
     public  HashMap<Integer, Task> taskMaster;
 
@@ -23,27 +22,31 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public ArrayList<Task> getHistory() {return historyManager.getHistory();}
+    public ArrayList<Task> getHistory() {
+        return (ArrayList<Task>) historyManager.getHistory();
+    }
 
-    public HashMap<Integer, Task> getTaskMaster(){
+    public HashMap<Integer, Task> getTaskMaster() {
         return taskMaster;
     }
 
     @Override
     public void delete(Integer id) {
         if (taskMaster.containsKey(id)) {
-            if (((Task)taskMaster.get(id)).getTaskClass() == Class.TASK || ((Epic)taskMaster.get(id)).getTaskClass() == Class.EPIC) {
+            if (taskMaster.get(id).getTaskClass() == Class.TASK || taskMaster.get(id).getTaskClass() == Class.EPIC) {
+                historyManager.add(taskMaster.remove(id));
                 taskMaster.remove(id);
+            } else {
+                historyManager.add(((Epic)serchTask(getMotherID(id))).getSubMap().remove(id));
+                ((Epic)serchTask(getMotherID(id))).getSubMap().remove(id);
             }
-        } else {
-            ((Epic)serchTask(getMotherID(id))).getSubMap().remove(id);
         }
     }
 
     @Override
-    public void deleteAllSubtasks(){
+    public void deleteAllSubtasks() {
         for (Task epic : taskMaster.values()) {
-            if (epic.getTaskClass() == Class.EPIC){
+            if (epic.getTaskClass() == Class.EPIC) {
                 ((Epic) epic).getSubMap().clear();
                 changeStatusEpic((Epic) epic);
             }
@@ -55,7 +58,6 @@ public class InMemoryTaskManager implements TaskManager {
         final int ident = id++;
         task.setId(ident);
         taskMaster.put(task.getId(), task);
-
         return task.getId();
     }
 
@@ -64,7 +66,6 @@ public class InMemoryTaskManager implements TaskManager {
         final int ident = id++;
         epic.setId(ident);
         taskMaster.put(epic.getId(), epic);
-
         return epic.getId();
     }
 
@@ -72,72 +73,58 @@ public class InMemoryTaskManager implements TaskManager {
     public int pushSub(Epic epic, Subtask sub) {
         final int ident = id++;
         sub.setId(ident);
-
         epic.getSubMap().put(sub.getId(), sub);
         sub.setMotherId(epic);
-
         changeStatusEpic(epic);
-
         return sub.getId();
     }
 
     @Override
     public void updateTask(Task task) {
-        if (task != null){
+        if (task != null) {
             taskMaster.put(task.getId(), task);
         }
     }
-
-    /*@Override
-    public Task serchTask(int searchingId) {
-        if (taskMaster.containsKey(searchingId)) {
-            if (((Task)taskMaster.get(searchingId)).getTaskClass() == Class.TASK || ((Epic)taskMaster.get(searchingId)).getTaskClass() == Class.EPIC) {
-                historyManager.add(taskMaster.get(searchingId));
-                return taskMaster.get(searchingId);
-            }
-
-        } else {
-            for (Tasks tasks : taskMaster.values()) {
-                Epic epic = (Epic) tasks;
-                if (epic.getTaskClass() == Class.EPIC && epic.getSubMap().containsKey(searchingId)) {
-                    historyManager.add(epic.getSubMap().get(searchingId));
-                    return epic.getSubMap().get(searchingId);
-                }
-            }
-        }
-        return null;
-    }*/
 
     @Override
     public Epic serchEpic(int searchingId) {
         if (taskMaster.containsKey(searchingId)) {
             if (taskMaster.get(searchingId).getTaskClass() == Class.EPIC) {
-                historyManager.add((Task) taskMaster.get(searchingId));
+                historyManager.add(taskMaster.get(searchingId));
                 return (Epic) taskMaster.get(searchingId);
             }
         }
         return null;
     }
+
     @Override
     public Subtask serchSubtask(int searchingId) {
+
         for (Task task : taskMaster.values()) {
-            Epic epic = (Epic) task;
-            if (epic.getTaskClass() == Class.EPIC && epic.getSubMap().containsKey(searchingId)) {
-                historyManager.add(epic.getSubMap().get(searchingId));
-                return epic.getSubMap().get(searchingId);
+            if(task.getTaskClass() == Class.EPIC){
+                Epic epic = (Epic) task;
+                if (epic.getSubMap().containsKey(searchingId)) {
+                    Subtask sub = epic.getSubMap().get(searchingId);
+                    historyManager.add(sub);
+                    return sub;
+                }
             }
+
         }
         return null;
     }
 
     @Override
     public Task serchTask(int searchingId) {
+
         if (taskMaster.containsKey(searchingId)) {
-            if (((Task) taskMaster.get(searchingId)).getTaskClass() == Class.TASK || ((Epic) taskMaster.get(searchingId)).getTaskClass() == Class.EPIC) {
+
+            if ((taskMaster.get(searchingId)).getTaskClass() == Class.TASK || (taskMaster.get(searchingId)).getTaskClass() == Class.EPIC) {
+
                 historyManager.add(taskMaster.get(searchingId));
+
                 return (Task) taskMaster.get(searchingId);
             }
-
         }
         return null;
     }
@@ -145,9 +132,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public ArrayList<Subtask> getSubtaskList() {
         ArrayList<Subtask> subTusk = new ArrayList<>();
-        for (Task tasks : taskMaster.values()){
+        for (Task tasks : taskMaster.values()) {
             Epic epic = (Epic) tasks;
-            if (epic.getTaskClass() == Class.EPIC){
+            if (epic.getTaskClass() == Class.EPIC) {
                 subTusk.addAll(epic.getSubMap().values());
             }
         }
@@ -155,12 +142,12 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public ArrayList<Epic> getEpicList(){
+    public ArrayList<Epic> getEpicList() {
         ArrayList<Epic> tasks = new ArrayList<>();
-        for (int i = 0; i < id; i++){
-            if (taskMaster.containsKey(i)){
+        for (int i = 0; i < id; i++) {
+            if (taskMaster.containsKey(i)) {
                 if (taskMaster.get(i).getTaskClass() == Class.EPIC) {
-                    tasks.add ((Epic) (taskMaster.get(i)));
+                    tasks.add((Epic)(taskMaster.get(i)));
                 }
             }
         }
@@ -168,12 +155,12 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public ArrayList<Task> getTaskList(){
+    public ArrayList<Task> getTaskList() {
         ArrayList<Task> tasks = new ArrayList<>();
-        for (int i = 0; i < id; i++){
-            if (taskMaster.containsKey(i)){
-                if (taskMaster.get(i).getTaskClass() == Class.TASK ) {
-                    tasks.add( taskMaster.get(i));
+        for (int i = 0; i < id; i++) {
+            if (taskMaster.containsKey(i)) {
+                if (taskMaster.get(i).getTaskClass() == Class.TASK) {
+                    tasks.add(taskMaster.get(i));
                 }
             }
         }
@@ -181,47 +168,45 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void changeStatusSub(Status status, Subtask sub){
+    public void changeStatusSub(Status status, Subtask sub) {
         sub.setStatus(status);
         changeStatusEpic((Epic) serchTask(getMotherID(sub.getId())));
     }
 
     @Override
-    public void changeStatusTask(Status status, Task task){
+    public void changeStatusTask(Status status, Task task) {
         task.setStatus(status);
     }
 
     @Override
-    public void changeStatusEpic(Epic epic){
+    public void changeStatusEpic(Epic epic) {
         boolean setNew = true;
         boolean setDone = true;
-
-        for (Subtask sub : epic.getSubMap().values()){
-            if (sub.getStatus() != Status.NEW){
+        for (Subtask sub : epic.getSubMap().values()) {
+            if (sub.getStatus() != Status.NEW) {
                 setNew = false;
             }
-            if (sub.getStatus() != Status.DONE){
+            if (sub.getStatus() != Status.DONE) {
                 setDone = false;
             }
         }
 
-        if(setDone){
+        if (setDone) {
             epic.setStatus(Status.DONE);
         } else if (setNew) {
             epic.setStatus(Status.NEW);
-
         } else {
             epic.setStatus(Status.IN_PROGRESS);
         }
     }
 
     @Override
-    public Integer getMotherID(Integer id){
-        for (Task ep : getTaskMaster().values()){
-            if (ep.getTaskClass() == Class.EPIC){
+    public Integer getMotherID(Integer id) {
+        for (Task ep : getTaskMaster().values()) {
+            if (ep.getTaskClass() == Class.EPIC) {
                 Epic epic = (Epic) ep;
-                for(Subtask subtask : epic.getSubMap().values()){
-                    if (id == subtask.getId()){
+                for (Subtask subtask : epic.getSubMap().values()) {
+                    if (id == subtask.getId()) {
                         return epic.getId();
                     }
                 }
@@ -229,5 +214,4 @@ public class InMemoryTaskManager implements TaskManager {
         }
         return null;
     }
-
 }

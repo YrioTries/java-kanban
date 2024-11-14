@@ -1,15 +1,17 @@
-package Classes;
+package classes;
 
-import Classes.enums.Class;
+import classes.enums.Class;
 
 public class Subtask extends Task{
+
     private int motherId;
+
     public Subtask(String title, String description) {
         super(title, description);
     }
 
     @Override
-    public Classes.enums.Class getTaskClass(){
+    public classes.enums.Class getTaskClass(){
         return Class.SUBTUSK;
     }
 

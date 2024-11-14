@@ -1,11 +1,12 @@
-package Classes;
+package classes;
 
-import Classes.enums.Class;
-import Classes.enums.Status;
+import classes.enums.Class;
+import classes.enums.Status;
 
 import java.util.Objects;
 
 public class Task {
+
     private int id;
     private String title;
     private String description;
@@ -17,7 +18,7 @@ public class Task {
         this.status = Status.NEW;
     }
 
-    public Classes.enums.Class getTaskClass(){
+    public classes.enums.Class getTaskClass(){
         return Class.TASK;
     }
 
@@ -60,8 +61,9 @@ public class Task {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (((Task) o).getId() == this.getId()) return true;
         Task task = (Task) o;
+        if (task.getId() == this.getId()) return true;
+
         return Objects.equals(title, task.title) && Objects.equals(description, task.description) && status == task.status;
     }
 

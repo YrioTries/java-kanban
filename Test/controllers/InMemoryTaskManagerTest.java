@@ -1,15 +1,11 @@
 package controllers;
 
-import Classes.Epic;
-import Classes.Subtask;
-import Classes.Task;
-import Classes.enums.Class;
+import classes.*;
+import classes.enums.Class;
 import controllers.interfaces.HistoryManager;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
 import java.util.ArrayList;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -30,7 +26,7 @@ public class InMemoryTaskManagerTest {
 
     public void printAllTasks(){
         System.out.println("///////////////////////////////_ALL_TASKS_///////////////////////////////");
-        for (int i = 0; i < test.taskMaster.size(); i++){
+        for (int i = 0; i < test.taskMaster.size(); i++) {
             if (test.taskMaster.containsKey(i) && test.taskMaster.get(i) != null) {
                 if (test.taskMaster.get(i) instanceof Epic) {
                     Epic epic = (Epic) test.taskMaster.get(i);
@@ -38,7 +34,7 @@ public class InMemoryTaskManagerTest {
                             + epic.getId() + " и статусом: "
                             + epic.getStatus());
 
-                    for (Subtask sub : epic.getSubMap().values()){
+                    for (Subtask sub : epic.getSubMap().values()) {
                         System.out.println("Подзадача: " + sub.getTitle() + " c id: " + sub.getId() + " и статусом: "
                                 + sub.getStatus());
                     }
@@ -56,10 +52,10 @@ public class InMemoryTaskManagerTest {
             for (Object obj : test.getHistory()) {
 
                 Task task = (Task) obj;
-                if (task instanceof Epic){
+                if (task instanceof Epic) {
 
                     System.out.println("Эпик с id: " + task.getId());
-                } else if (task instanceof Subtask){
+                } else if (task instanceof Subtask) {
 
                     System.out.println("Подзадание с id: " + task.getId());
                 } else {
@@ -73,7 +69,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @BeforeAll
-    public static void pushTasks(){
+    public static void pushTasks() {
         test.pushEpic(epic1);
         test.pushSub(epic1, sub1);
         test.pushSub(epic1, sub2);
@@ -86,7 +82,7 @@ public class InMemoryTaskManagerTest {
     ///////////////////////////////////////////   Task Test   ///////////////////////////////////////////
 
     @Test
-    public void shouldBeEqualsTwoSubsWithSameId(){
+    public void shouldBeEqualsTwoSubsWithSameId() {
         assertNotEquals(sub1, sub2);
 
         sub1.setId(sub2.getId());
@@ -98,7 +94,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldBeEqualsTwoTasksWithSameId(){
+    public void shouldBeEqualsTwoTasksWithSameId() {
         assertNotEquals(task1, task2);
 
         task1.setId(task2.getId());
@@ -110,7 +106,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldBeEqualsTwoEpicsWithSameId(){
+    public void shouldBeEqualsTwoEpicsWithSameId() {
         assertNotEquals(epic1, epic2, "Эпики изначально равны друг другу");
         int id = epic1.getId();
         epic1.setId(epic2.getId());
@@ -121,6 +117,10 @@ public class InMemoryTaskManagerTest {
         assertEquals(epic1, epic2);
         epic1.setId(id);
     }
+
+
+    /////////////////////////////////////////// serchTask(id) ///////////////////////////////////////////
+
 
     @Test
     void addNewTask() {
@@ -140,17 +140,8 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    void add() {
-        historyManager.add(task1);
-        final ArrayList<Task> history = historyManager.getHistory();
-        assertNotNull(history, "История пустая.");
-        assertEquals(1, history.size(), "История неполная.");
-    }
-
-    /////////////////////////////////////////// serchTask(id) ///////////////////////////////////////////
-    @Test
     public void shouldBeEqualsEpic1() {
-        Integer id = epic1.getId();
+        int id = epic1.getId();
         Object result = test.serchTask(id);
 
         assertNotNull(result);
@@ -159,7 +150,7 @@ public class InMemoryTaskManagerTest {
 
     @Test
     public void shouldNotBeEqualsEpic2() {
-        Integer id = epic2.getId();
+        int id = epic2.getId();
         Object result = test.serchTask(id);
 
         assertNotNull(result);
@@ -186,7 +177,7 @@ public class InMemoryTaskManagerTest {
     ///////////////////////////////////////////// getMotherID(id) ///////////////////////////////////////////
 
     @Test
-    public void shouldBe_0IDForSub1(){
+    public void shouldBe_0IDForSub1() {
         int id = sub1.getId();
         Integer result = test.getMotherID(id);
 
@@ -195,7 +186,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldBe_0IDSub2(){
+    public void shouldBe_0IDSub2() {
         int id = sub2.getId();
         Integer result = test.getMotherID(id);
 
@@ -204,7 +195,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldBe_3IDSub3(){
+    public void shouldBe_3IDSub3() {
         Integer id = sub3.getId();
         Integer result = test.getMotherID(id);
 
@@ -213,7 +204,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldNotBeEquals(){
+    public void shouldNotBeEquals() {
         int id = sub3.getId();
         Integer result = test.getMotherID(id);
 
@@ -222,7 +213,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldBeNull(){
+    public void shouldBeNull() {
         int id = 150;
         Integer result = test.getMotherID(id);
 
