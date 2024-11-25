@@ -16,8 +16,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     public FileBackedTaskManager() {
         super();
-        this.filePath = "base.csv";
-        loadFromFile();
+        this.filePath = "base.csv"; //Пока временный вариант, нужно через параметр
+        loadFromFile(filePath);
     }
 
     @Override
@@ -31,9 +31,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         if (taskMaster.isEmpty()) {
             throw new ManagerSaveException("Нет задач для сохранения");
         }
-        try (FileWriter fileWriter = new FileWriter(filePath, StandardCharsets.UTF_8)) {
+        try (FileWriter fileWriter = new FileWriter(filePath, StandardCharsets.UTF_8, true)) {
             for (Task task : taskMaster.values()) {
                 fileWriter.write(task.toString() + "\n");
+
                 if (task.getTaskClass() == Class.EPIC) {
                     Epic epic = (Epic) task;
                     for (Subtask sub : epic.getSubMap().values()) {
@@ -46,9 +47,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
-    private void loadFromFile() {
+    private void loadFromFile(String path) {
         Epic currentEpic = null; // Сброс текущего эпика перед началом чтения файла
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath, StandardCharsets.UTF_8))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(path, StandardCharsets.UTF_8))) {
             String line;
             while ((line = br.readLine()) != null) {
                 if (!line.trim().isEmpty()) { // Проверка на пустоту строки
@@ -56,6 +57,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     if (task != null) {
                         if (!taskMaster.containsKey(task.getId())) {
                             taskMaster.put(task.getId(), task);
+
                             if (task.getTaskClass() == Class.EPIC) {
                                 currentEpic = (Epic) task;
                             } else if (task.getTaskClass() == Class.SUBTASK) {
@@ -77,11 +79,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     public Task fromString(String line) {
         String[] param = line.split(",");
 
-        if (param.length < 5) {
+        if (param.length != 5) {
             throw new IllegalArgumentException("Неверный формат строки: " + line);
         }
 
-        int id = Integer.parseInt(param[0]); // Исправлена синтаксическая ошибка
+        int id = Integer.parseInt(param[0]);
         String title = param[1];
         Class taskClass = Class.valueOf(param[2]);
         Status status = Status.valueOf(param[3]);

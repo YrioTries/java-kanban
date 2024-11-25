@@ -15,7 +15,7 @@ public interface TaskManager {
     ArrayList<Subtask> getSubtaskList();
     ArrayList<Epic> getEpicList();
     void delete(Integer id);
-    void deleteAllSubtasks();
+//    void deleteAllSubtasks();
     void changeStatusSub(Status status, Subtask sub);
     void changeStatusTask(Status status, Task task);
     void changeStatusEpic(Epic epic);
@@ -23,9 +23,9 @@ public interface TaskManager {
     int pushTask(Task task) throws IOException, ManagerSaveException;
     int pushEpic(Epic epic) throws IOException, ManagerSaveException;
     int pushSub(Epic epic, Subtask sub) throws IOException, ManagerSaveException;
-    Epic serchEpic(int searchingId);
+//    Epic serchEpic(int searchingId);
     Task serchTask(int searchingId);
-    Subtask serchSubtask(int searchingId);
+//    Subtask serchSubtask(int searchingId);
     ArrayList<Task> getTaskList();
     Integer getMotherID(Integer id);
 }

@@ -2,7 +2,6 @@ package controllers;
 
 import classes.*;
 import classes.enums.Class;
-import controllers.interfaces.HistoryManager;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -13,7 +12,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class InMemoryTaskManagerTest {
 
-    private final HistoryManager historyManager = Managers.getDefaultHistory();
     static InMemoryTaskManager test = new InMemoryTaskManager();
 
     static Epic epic1 = new Epic("1.Эпик", "простой");
@@ -162,7 +160,7 @@ public class InMemoryTaskManagerTest {
     @Test
     public void shouldBeEqualsSub1() {
         int id = sub1.getId();
-        Object result = test.serchSubtask(id);
+        Object result = test.serchTask(id);
 
         assertNotNull(result);
         assertEquals(sub1, result);

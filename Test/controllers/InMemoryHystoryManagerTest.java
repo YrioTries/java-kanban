@@ -3,7 +3,6 @@ package controllers;
 import classes.Epic;
 import classes.Subtask;
 import classes.Task;
-import controllers.interfaces.HistoryManager;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +14,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class InMemoryHystoryManagerTest {
 
-    private final HistoryManager historyManager = Managers.getDefaultHistory();
     static InMemoryTaskManager test = new InMemoryTaskManager();
 
     static Epic epic1 = new Epic("1.Эпик", "простой");
@@ -43,8 +41,8 @@ public class InMemoryHystoryManagerTest {
     void HisorySizeNeedToBeFourAfterSerching() {
         test.serchTask(task1.getId());
         test.serchTask(task2.getId());
-        test.serchEpic(epic2.getId());
-        test.serchEpic(epic1.getId());
+        test.serchTask(epic2.getId());
+        test.serchTask(epic1.getId());
 
         final ArrayList<Task> history = test.getHistory();
         assertNotNull(history, "История пустая.");
@@ -55,8 +53,8 @@ public class InMemoryHystoryManagerTest {
     void HisorySizeNeedToBeFourAfterRemove() {
         test.serchTask(task1.getId());
         test.serchTask(task2.getId());
-        test.serchEpic(epic2.getId());
-        test.serchEpic(epic1.getId());
+        test.serchTask(epic2.getId());
+        test.serchTask(epic1.getId());
 
         test.delete(epic2.getId());
 
@@ -70,8 +68,8 @@ public class InMemoryHystoryManagerTest {
     void HisorySizeNeedToBeFourAfterRemoveTwoTimes() {
         test.serchTask(task1.getId());
         test.serchTask(task2.getId());
-        test.serchEpic(epic1.getId());
-        test.serchEpic(epic2.getId());
+        test.serchTask(epic1.getId());
+        test.serchTask(epic2.getId());
 
         test.delete(epic1.getId());
         test.delete(task2.getId());
@@ -87,12 +85,12 @@ public class InMemoryHystoryManagerTest {
     void HisorySizeNeedToBeFourAfterRemoveTwoAndSearchFiveTimes() {
         test.serchTask(task1.getId());
         test.serchTask(task2.getId());
-        test.serchEpic(epic1.getId());
-        test.serchEpic(epic2.getId());
+        test.serchTask(epic1.getId());
+        test.serchTask(epic2.getId());
 
         test.delete(epic1.getId());
         test.delete(task2.getId());
-        test.serchSubtask(sub3.getId());
+        test.serchTask(sub3.getId());
 
         final ArrayList<Task> history = test.getHistory();
         assertNotNull(history, "История пустая.");
