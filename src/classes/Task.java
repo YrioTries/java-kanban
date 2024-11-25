@@ -2,7 +2,6 @@ package classes;
 
 import classes.enums.Class;
 import classes.enums.Status;
-
 import java.util.Objects;
 
 public class Task {
@@ -18,11 +17,13 @@ public class Task {
         this.status = Status.NEW;
     }
 
-    public classes.enums.Class getTaskClass(){
+    public Class getTaskClass() {
         return Class.TASK;
     }
 
-    public void setId(Integer id) { this.id = id; }
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public Status getStatus() {
         return status;
@@ -59,10 +60,16 @@ public class Task {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Task task = (Task) o;
-        if (task.getId() == this.getId()) return true;
+        if (task.getId() == this.getId()) {
+            return true;
+        }
 
         return Objects.equals(title, task.title) && Objects.equals(description, task.description) && status == task.status;
     }
