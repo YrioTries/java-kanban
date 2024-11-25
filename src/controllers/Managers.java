@@ -5,7 +5,7 @@ import controllers.interfaces.TaskManager;
 
 public class Managers {
 
-    public TaskManager getDefault(){
+    public TaskManager getDefault() {
         return new InMemoryTaskManager();
     }
 
@@ -13,5 +13,7 @@ public class Managers {
         return new InMemoryHistoryManager();
     }
 
-    public static TaskManager getDefaultFile(){return new FileBackedTaskManager();}
+    public static TaskManager getDefaultFile() {
+            return new FileBackedTaskManager();
+    }
 }

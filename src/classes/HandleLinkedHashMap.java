@@ -33,7 +33,6 @@ public class HandleLinkedHashMap {
     private Map<Integer, Node> handleLinkedMap;
 
     private Node head;
-
     private Node tail;
 
     public HandleLinkedHashMap() {
