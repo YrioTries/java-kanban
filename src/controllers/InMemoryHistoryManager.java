@@ -34,7 +34,9 @@ class HandleLinkedHashMap {
     static class Node {
 
         public Task data;
+
         public Node next;
+
         public Node prev;
 
         public Node(Node prev, Task data, Node next) {
@@ -58,7 +60,9 @@ class HandleLinkedHashMap {
     }
 
     private Map<Integer, Node> handleLinkedMap;
+
     private Node head;
+
     private Node tail;
 
     public HandleLinkedHashMap() {
