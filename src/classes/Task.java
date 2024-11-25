@@ -12,7 +12,7 @@ public class Task {
     private String description;
     private Status status;
 
-    public Task(String title, String description){
+    public Task(String title, String description) {
         this.title = title;
         this.description = description;
         this.status = Status.NEW;
@@ -22,7 +22,7 @@ public class Task {
         return Class.TASK;
     }
 
-    public void setId(Integer id){this.id = id;}
+    public void setId(Integer id) { this.id = id; }
 
     public Status getStatus() {
         return status;
@@ -53,7 +53,7 @@ public class Task {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return this.getId() + "," + this.getTitle() + "," + this.getTaskClass() + "," + this.getStatus() + "," + this.getDescription();
     }
 
