@@ -54,7 +54,7 @@ public class Task {
 
     @Override
     public String toString(){
-        return "Task: " + this.getTitle() + " [id: " + this.getId() + ", status: " + this.getStatus() + "]";
+        return this.getId() + this.getTitle() + this.getTaskClass() + this.getStatus() + this.getDescription();
     }
 
     @Override

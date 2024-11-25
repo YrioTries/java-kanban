@@ -5,7 +5,9 @@ import classes.enums.Class;
 import classes.enums.Status;
 import controllers.interfaces.HistoryManager;
 import controllers.interfaces.TaskManager;
+import exeptions.ManagerSaveException;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.ArrayList;
 
@@ -70,7 +72,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public int pushSub(Epic epic, Subtask sub) {
+    public int pushSub(Epic epic, Subtask sub) throws IOException, ManagerSaveException {
         final int ident = id++;
         sub.setId(ident);
         epic.getSubMap().put(sub.getId(), sub);
