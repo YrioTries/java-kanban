@@ -41,7 +41,7 @@ public class HandleLinkedHashMap {
     }
 
     public void addLast(Task task) {
-        if (handleLinkedMap.containsKey(task.getId())){
+        if (handleLinkedMap.containsKey(task.getId())) {
 
             Node nodeNeedToMove = handleLinkedMap.get(task.getId());
 
@@ -104,18 +104,18 @@ public class HandleLinkedHashMap {
         }
 
         Node prevDel = needToDel.prev;
-        Node AfterDel = needToDel.next;
+        Node afterDel = needToDel.next;
 
         if (prevDel != null && size() != 0) {
-            prevDel.next = AfterDel;
+            prevDel.next = afterDel;
         }
 
-        if (AfterDel != null && size() != 0) {
-            AfterDel.prev = prevDel;
+        if (afterDel != null && size() != 0) {
+            afterDel.prev = prevDel;
         }
 
         if (position == 0) {
-            head = AfterDel;
+            head = afterDel;
         }
 
         if (position == size()) {
@@ -158,7 +158,7 @@ public class HandleLinkedHashMap {
         ArrayList<Task> tasks = new ArrayList<>();
         Node current = head;
 
-        while (current != null){
+        while (current != null) {
             tasks.add(current.data);
             current = current.next;
         }
@@ -170,8 +170,8 @@ public class HandleLinkedHashMap {
         String res = "HandleLinkedList[size:" + size() + "] [";
         Node pr = head;
 
-        while (pr != null){
-            if (pr.next == null){
+        while (pr != null) {
+            if (pr.next == null) {
                 res = pr.data + ". ";
             } else {
                 res = pr.data + ", ";
