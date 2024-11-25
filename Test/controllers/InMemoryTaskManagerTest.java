@@ -5,6 +5,8 @@ import classes.enums.Class;
 import controllers.interfaces.HistoryManager;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -69,7 +71,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @BeforeAll
-    public static void pushTasks() {
+    public static void pushTasks() throws IOException {
         test.pushEpic(epic1);
         test.pushSub(epic1, sub1);
         test.pushSub(epic1, sub2);

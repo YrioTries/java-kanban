@@ -7,6 +7,7 @@ import controllers.interfaces.HistoryManager;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,7 +29,7 @@ public class InMemoryHystoryManagerTest {
     static Task task2 = new Task("2.Задание", "сложноватое");
 
     @BeforeAll
-    public static void pushTasks() {
+    public static void pushTasks() throws IOException {
         test.pushEpic(epic1);
         test.pushSub(epic1, sub1);
         test.pushSub(epic1, sub2);

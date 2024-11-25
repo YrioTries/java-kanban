@@ -14,11 +14,17 @@ import java.util.ArrayList;
 public class InMemoryTaskManager implements TaskManager {
 
     private int id;
+
     private final HistoryManager historyManager;
+
+    private final TaskManager fileManager;
+
     public  HashMap<Integer, Task> taskMaster;
 
     public InMemoryTaskManager() {
         historyManager = Managers.getDefaultHistory();
+        fileManager = Managers.getDefaultFile();
+
         taskMaster = new HashMap<>();
         id = 0;
     }
@@ -124,7 +130,6 @@ public class InMemoryTaskManager implements TaskManager {
             if ((taskMaster.get(searchingId)).getTaskClass() == Class.TASK || (taskMaster.get(searchingId)).getTaskClass() == Class.EPIC) {
 
                 historyManager.add(taskMaster.get(searchingId));
-
                 return (Task) taskMaster.get(searchingId);
             }
         }
