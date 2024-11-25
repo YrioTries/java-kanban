@@ -19,7 +19,7 @@ public class HandleLinkedHashMap {
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            if (o == null || this.getClass() != o.getClass()) return false;
+            if (o == null || getClass() != o.getClass()) return false;
             Node node = (Node) o;
             return data.equals(node.data);
         }
@@ -41,7 +41,6 @@ public class HandleLinkedHashMap {
 
     public void addLast(Task task) {
         if (handleLinkedMap.containsKey(task.getId())) {
-
             Node nodeNeedToMove = handleLinkedMap.get(task.getId());
 
             Node prevMove = nodeNeedToMove.prev;
@@ -67,7 +66,9 @@ public class HandleLinkedHashMap {
 
         Node newNode = new Node(tail, task, null);
 
-        if (tail != null) tail.next = newNode;
+        if (tail != null) {
+            tail.next = newNode;
+        }
 
         if (size() == 0) {
             head = tail = newNode;
@@ -79,16 +80,19 @@ public class HandleLinkedHashMap {
 
     public Task getFirst() {
         final Node curHead = head;
-        if (curHead == null)
+        if (curHead == null) {
             throw new NoSuchElementException();
+        }
         return head.data;
     }
 
     public Task getLast() {
         final Node curTail = tail;
 
-        if (curTail == null)
+        if (curTail == null) {
             throw new NoSuchElementException();
+        }
+
         return tail.data;
     }
 
@@ -96,8 +100,7 @@ public class HandleLinkedHashMap {
         int w = 0;
         Node needToDel = head;
 
-        while (w < position)
-        {
+        while (w < position) {
             needToDel = needToDel.next;
             w++;
         }
@@ -124,21 +127,20 @@ public class HandleLinkedHashMap {
     }
 
     public void removeNodeId(int id) {
-
         Node needToDel = handleLinkedMap.get(id);
 
         Node prevDel = needToDel.prev;
-        Node AfterDel = needToDel.next;
+        Node afterDel = needToDel.next;
 
         handleLinkedMap.remove(id);
 
-        if (prevDel != null && AfterDel != null && size() != 0) {
-            prevDel.next = AfterDel;
-            AfterDel.prev = prevDel;
+        if (prevDel != null && afterDel != null && size() != 0) {
+            prevDel.next = afterDel;
+            afterDel.prev = prevDel;
         }
 
         if (needToDel == head) {
-            head = AfterDel;
+            head = afterDel;
         }
 
         if (needToDel == tail) {
@@ -153,7 +155,9 @@ public class HandleLinkedHashMap {
     }
 
     public ArrayList<Task> getTasks() {
-        if (head == null) return null;
+        if (head == null) {
+            return null;
+        }
         ArrayList<Task> tasks = new ArrayList<>();
         Node current = head;
 
@@ -171,9 +175,9 @@ public class HandleLinkedHashMap {
 
         while (pr != null) {
             if (pr.next == null) {
-                res = pr.data + ". ";
+                res += pr.data + ". ";
             } else {
-                res = pr.data + ", ";
+                res += pr.data + ", ";
             }
             pr = pr.next;
         }
