@@ -13,7 +13,6 @@ import exeptions.ManagerSaveException;
 public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private final String filePath;
-    private Epic currentEpic;
 
     public FileBackedTaskManager() {
         super();
@@ -29,6 +28,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     public void save() throws IOException, ManagerSaveException {
+        if (taskMaster.isEmpty()) {
+            throw new ManagerSaveException("Нет задач для сохранения");
+        }
         try (FileWriter fileWriter = new FileWriter(filePath, StandardCharsets.UTF_8)) {
             for (Task task : taskMaster.values()) {
                 fileWriter.write(task.toString() + "\n");
@@ -45,40 +47,45 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     private void loadFromFile() {
+        Epic currentEpic = null; // Сброс текущего эпика перед началом чтения файла
         try (BufferedReader br = new BufferedReader(new FileReader(filePath, StandardCharsets.UTF_8))) {
             String line;
             while ((line = br.readLine()) != null) {
-                Task task = fromString(line);
-                if (task != null) {
-                    if (!taskMaster.containsKey(task.getId())) {
-                        taskMaster.put(task.getId(), task);
-                        if (task.getTaskClass() == Class.EPIC) {
-                            currentEpic = (Epic) task;
-                        } else if (task.getTaskClass() == Class.SUBTASK) {
-                            if (currentEpic != null) {
-                                currentEpic.getSubMap().put(task.getId(), (Subtask) task);
-                                ((Subtask) task).setMotherId(currentEpic);
+                if (!line.trim().isEmpty()) { // Проверка на пустоту строки
+                    Task task = fromString(line);
+                    if (task != null) {
+                        if (!taskMaster.containsKey(task.getId())) {
+                            taskMaster.put(task.getId(), task);
+                            if (task.getTaskClass() == Class.EPIC) {
+                                currentEpic = (Epic) task;
+                            } else if (task.getTaskClass() == Class.SUBTASK) {
+                                if (currentEpic != null) {
+                                    currentEpic.getSubMap().put(task.getId(), (Subtask) task);
+                                    ((Subtask) task).setMotherId(currentEpic);
+                                }
                             }
                         }
                     }
                 }
             }
+
         } catch (IOException e) {
             System.out.println("Ошибка чтения файла: " + e.getMessage());
         }
     }
 
     public Task fromString(String line) {
-        String[] parts = line.split(",");
-        if (parts.length < 5) {
+        String[] param = line.split(",");
+
+        if (param.length < 5) {
             throw new IllegalArgumentException("Неверный формат строки: " + line);
         }
 
-        int id = Integer.parseInt(parts[0]);
-        String title = parts[1];
-        Class taskClass = Class.valueOf(parts[2]);
-        Status status = Status.valueOf(parts[3]);
-        String description = parts[4];
+        int id = Integer.parseInt(param[0]); // Исправлена синтаксическая ошибка
+        String title = param[1];
+        Class taskClass = Class.valueOf(param[2]);
+        Status status = Status.valueOf(param[3]);
+        String description = param[4];
 
         Task task;
         switch (taskClass) {
@@ -89,9 +96,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 task = new Epic(title, description);
                 break;
             case SUBTASK:
-                if (parts.length < 6) {
-                    throw new IllegalArgumentException("Неверный формат строки для подзадачи: " + line);
-                }
                 task = new Subtask(title, description);
                 break;
             default:

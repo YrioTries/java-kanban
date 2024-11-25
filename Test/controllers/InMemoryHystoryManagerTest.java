@@ -46,7 +46,6 @@ public class InMemoryHystoryManagerTest {
         test.serchEpic(epic2.getId());
         test.serchEpic(epic1.getId());
 
-
         final ArrayList<Task> history = test.getHistory();
         assertNotNull(history, "История пустая.");
         assertEquals(4, history.size(), "История неполная.");

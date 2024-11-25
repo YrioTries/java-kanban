@@ -17,13 +17,13 @@ public class InMemoryTaskManager implements TaskManager {
 
     private final HistoryManager historyManager;
 
-    private final TaskManager fileManager;
+    //private final TaskManager fileManager;
 
     public  HashMap<Integer, Task> taskMaster;
 
     public InMemoryTaskManager() {
         historyManager = Managers.getDefaultHistory();
-        fileManager = Managers.getDefaultFile();
+        //fileManager = Managers.getDefaultFile();
 
         taskMaster = new HashMap<>();
         id = 0;
@@ -43,7 +43,6 @@ public class InMemoryTaskManager implements TaskManager {
         if (taskMaster.containsKey(id)) {
             if (taskMaster.get(id).getTaskClass() == Class.TASK || taskMaster.get(id).getTaskClass() == Class.EPIC) {
                 historyManager.add(taskMaster.remove(id));
-                taskMaster.remove(id);
             } else {
                 historyManager.add(((Epic)serchTask(getMotherID(id))).getSubMap().remove(id));
                 ((Epic)serchTask(getMotherID(id))).getSubMap().remove(id);
@@ -189,6 +188,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void changeStatusEpic(Epic epic) {
         boolean setNew = true;
         boolean setDone = true;
+
         for (Subtask sub : epic.getSubMap().values()) {
             if (sub.getStatus() != Status.NEW) {
                 setNew = false;
