@@ -19,7 +19,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     //private final TaskManager fileManager;
 
-    public  HashMap<Integer, Task> taskMaster;
+    public HashMap<Integer, Task> taskMaster;
 
     public InMemoryTaskManager() {
         historyManager = Managers.getDefaultHistory();
@@ -29,7 +29,7 @@ public class InMemoryTaskManager implements TaskManager {
         id = 0;
     }
 
-    protected void setManagerId(int id){
+    protected void setManagerId(int id) {
         this.id = id + 1;
     }
 
@@ -56,7 +56,7 @@ public class InMemoryTaskManager implements TaskManager {
             } else if (taskMaster.get(id).getTaskClass() == Class.EPIC) { // Удаление сабов при удалении эпиков
                 Epic epic = (Epic) taskMaster.get(id);
 
-                for(Integer subId : epic.getSubMap().keySet()) {
+                for (Integer subId : epic.getSubMap().keySet()) {
                     historyManager.remove(subId);
                     taskMaster.remove(subId);
                 }
@@ -127,7 +127,7 @@ public class InMemoryTaskManager implements TaskManager {
         for (int i = 0; i < id; i++) {
             if (taskMaster.containsKey(i)) {
                 if (taskMaster.get(i).getTaskClass() == Class.EPIC) {
-                    tasks.add((Epic)(taskMaster.get(i)));
+                    tasks.add((Epic) (taskMaster.get(i)));
                 }
             }
         }
