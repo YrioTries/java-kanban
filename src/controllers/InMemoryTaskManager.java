@@ -29,6 +29,10 @@ public class InMemoryTaskManager implements TaskManager {
         id = 0;
     }
 
+    protected void setManagerId(int id){
+        this.id = id + 1;
+    }
+
     @Override
     public ArrayList<Task> getHistory() {
         return (ArrayList<Task>) historyManager.getHistory();
@@ -48,15 +52,22 @@ public class InMemoryTaskManager implements TaskManager {
                 epic.getSubMap().remove(sub.getId());
                 sub = null;
                 epic = null;
-            }
-            historyManager.add(taskMaster.remove(id));
-            taskMaster.remove(id);
 
+            } else if (taskMaster.get(id).getTaskClass() == Class.EPIC) { // Удаление сабов при удалении эпиков
+                Epic epic = (Epic) taskMaster.get(id);
+
+                for(Integer subId : epic.getSubMap().keySet()) {
+                    historyManager.remove(subId);
+                    taskMaster.remove(subId);
+                }
+            }
+            historyManager.remove(id);
+            taskMaster.remove(id);
         }
     }
 
     @Override
-    public int pushTask(Task task) {
+    public int pushTask(Task task) throws IOException {
         final int ident = id++;
         task.setId(ident);
         taskMaster.put(task.getId(), task);
@@ -64,7 +75,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public int pushEpic(Epic epic) {
+    public int pushEpic(Epic epic) throws IOException {
         final int ident = id++;
         epic.setId(ident);
         taskMaster.put(epic.getId(), epic);
@@ -88,34 +99,6 @@ public class InMemoryTaskManager implements TaskManager {
             taskMaster.put(task.getId(), task);
         }
     }
-
-//    @Override
-//    public Epic serchEpic(int searchingId) {
-//        if (taskMaster.containsKey(searchingId)) {
-//            if (taskMaster.get(searchingId).getTaskClass() == Class.EPIC) {
-//                historyManager.add(taskMaster.get(searchingId));
-//                return (Epic) taskMaster.get(searchingId);
-//            }
-//        }
-//        return null;
-//    }
-
-//    @Override
-//    public Subtask serchSubtask(int searchingId) {
-//
-//        for (Task task : taskMaster.values()) {
-//            if(task.getTaskClass() == Class.EPIC){
-//                Epic epic = (Epic) task;
-//                if (epic.getSubMap().containsKey(searchingId)) {
-//                    Subtask sub = epic.getSubMap().get(searchingId);
-//                    historyManager.add(sub);
-//                    return sub;
-//                }
-//            }
-//
-//        }
-//        return null;
-//    }
 
     @Override
     public Task serchTask(int searchingId) {

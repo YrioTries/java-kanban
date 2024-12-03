@@ -96,58 +96,29 @@ public class HandleLinkedHashMap {
         return tail.data;
     }
 
-    public void removeNode(int position) {
-        int w = 0;
-        Node needToDel = head;
-
-        while (w < position) {
-            needToDel = needToDel.next;
-            w++;
-        }
-
-        Node prevDel = needToDel.prev;
-        Node afterDel = needToDel.next;
-
-        if (prevDel != null && size() != 0) {
-            prevDel.next = afterDel;
-        }
-
-        if (afterDel != null && size() != 0) {
-            afterDel.prev = prevDel;
-        }
-
-        if (position == 0) {
-            head = afterDel;
-        }
-
-        if (position == size()) {
-            tail = prevDel;
-        }
-        handleLinkedMap.remove(needToDel.data.getId());
-    }
-
     public void removeNodeId(int id) {
-        Node needToDel = handleLinkedMap.get(id);
 
-        Node prevDel = needToDel.prev;
-        Node afterDel = needToDel.next;
+        if (handleLinkedMap.containsKey(id)) {
+            Node needToDel = handleLinkedMap.get(id);
 
-        handleLinkedMap.remove(id);
+            Node prevDel = needToDel.prev;
+            Node afterDel = needToDel.next;
 
-        if (prevDel != null && afterDel != null && size() != 0) {
-            prevDel.next = afterDel;
-            afterDel.prev = prevDel;
+            if (needToDel == head && afterDel != null) {
+                head = afterDel;
+
+            } else if (needToDel == tail && prevDel != null) {
+                tail = prevDel;
+
+            } else if (prevDel != null && afterDel != null) {
+                prevDel.next = afterDel;
+            }
+
+            handleLinkedMap.remove(needToDel.data.getId());
+
+            needToDel.prev = null;
+            needToDel.next = null;
         }
-
-        if (needToDel == head) {
-            head = afterDel;
-        }
-
-        if (needToDel == tail) {
-            tail = prevDel;
-        }
-
-        handleLinkedMap.remove(id);
     }
 
     public int size() {
