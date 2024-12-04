@@ -3,7 +3,6 @@ package controllers;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import classes.*;
 import classes.enums.Class;
