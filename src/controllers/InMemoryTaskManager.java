@@ -67,7 +67,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public int pushTask(Task task) throws IOException {
+    public int pushTask(Task task) {
         final int ident = id++;
         task.setId(ident);
         taskMaster.put(task.getId(), task);
@@ -75,7 +75,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public int pushEpic(Epic epic) throws IOException {
+    public int pushEpic(Epic epic) {
         final int ident = id++;
         epic.setId(ident);
         taskMaster.put(epic.getId(), epic);
@@ -83,7 +83,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public int pushSub(Epic epic, Subtask sub) throws IOException, ManagerSaveException {
+    public int pushSub(Epic epic, Subtask sub) {
         final int ident = id++;
         sub.setId(ident);
         epic.getSubMap().put(sub.getId(), sub);

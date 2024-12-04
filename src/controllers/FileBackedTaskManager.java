@@ -21,27 +21,27 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public int pushSub(Epic epic, Subtask subtask) throws IOException, ManagerSaveException {
+    public int pushSub(Epic epic, Subtask subtask) throws ManagerSaveException {
         int id = super.pushSub(epic, subtask);
         save();
         return id;
     }
 
     @Override
-    public int pushEpic(Epic epic) throws IOException, ManagerSaveException {
+    public int pushEpic(Epic epic) throws ManagerSaveException {
         int id = super.pushEpic(epic);
         save();
         return id;
     }
 
     @Override
-    public int pushTask(Task task) throws IOException, ManagerSaveException {
+    public int pushTask(Task task) throws ManagerSaveException {
         int id = super.pushTask(task);
         save();
         return id;
     }
 
-    public void save() throws IOException, ManagerSaveException {
+    public void save() {
         if (taskMaster.isEmpty()) {
             throw new ManagerSaveException("Нет задач для сохранения");
         }
@@ -69,7 +69,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 }
             }
         } catch (IOException e) {
-            System.out.println("Ошибка чтения файла: " + e.getMessage() + Arrays.toString(e.getStackTrace()));
+            throw new ManagerSaveException("Ошибка чтения файла " + filePath);
         }
 
         // Запись новых задач в файл
@@ -80,13 +80,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 }
             }
         } catch (IOException e) {
-            System.out.println("Ошибка записи в файл: " + e.getMessage() + Arrays.toString(e.getStackTrace()));
+            throw new ManagerSaveException("Ошибка записи в файл " + filePath);
         }
     }
 
-    private void loadFromFile(String path) {
+    private void loadFromFile(String filePath) {
         Epic currentEpic = null; // Сброс текущего эпика перед началом чтения файла
-        try (BufferedReader br = new BufferedReader(new FileReader(path, StandardCharsets.UTF_8))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath, StandardCharsets.UTF_8))) {
             String line;
             while ((line = br.readLine()) != null) {
                 if (!line.trim().isEmpty()) { // Проверка на пустоту строки
@@ -115,11 +115,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 }
             }
 
-        }  catch (ManagerSaveException e) {
-            System.out.println("Ошибка записи в файл\n" + e.getMessage() + Arrays.toString(e.getStackTrace()));
-
         } catch (IOException e) {
-            System.out.println("Ошибка чтения файла: " + e.getMessage() + Arrays.toString(e.getStackTrace()));
+            throw new ManagerSaveException("Ошибка чтения файла " + filePath);
         }
     }
 
@@ -171,8 +168,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             String firstLine = br.readLine();
             return firstLine == null || firstLine.trim().isEmpty(); // Если первая строка отсутствует или пуста
         } catch (IOException e) {
-            e.printStackTrace();
-            return true; // Возвращаем true в случае ошибки чтения
+            throw new ManagerSaveException("Ошибка чтения файла " + filePath);
         }
     }
 }

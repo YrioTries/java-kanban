@@ -27,11 +27,11 @@ public interface TaskManager {
 
     void updateTask(Task task);
 
-    int pushTask(Task task) throws IOException, ManagerSaveException;
+    int pushTask(Task task);
 
-    int pushEpic(Epic epic) throws IOException, ManagerSaveException;
+    int pushEpic(Epic epic);
 
-    int pushSub(Epic epic, Subtask sub) throws IOException, ManagerSaveException;
+    int pushSub(Epic epic, Subtask sub);
 
     Task serchTask(int searchingId);
 
