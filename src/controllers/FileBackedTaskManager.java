@@ -1,10 +1,9 @@
 package controllers;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+
 import classes.*;
 import classes.enums.Class;
 import classes.enums.Status;
@@ -14,42 +13,79 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     private final String filePath;
 
-    public FileBackedTaskManager() {
+    public FileBackedTaskManager(String filePath) {
         super();
-        this.filePath = "base.csv"; //Пока временный вариант, нужно через параметр
+        this.filePath = filePath; //Пока временный вариант, нужно через параметр
         loadFromFile(filePath);
     }
 
     @Override
-    public int pushSub(Epic epic, Subtask subtask) throws IOException, ManagerSaveException {
+    public int pushSub(Epic epic, Subtask subtask) throws ManagerSaveException {
         int id = super.pushSub(epic, subtask);
         save();
         return id;
     }
 
-    public void save() throws IOException, ManagerSaveException {
+    @Override
+    public int pushEpic(Epic epic) throws ManagerSaveException {
+        int id = super.pushEpic(epic);
+        save();
+        return id;
+    }
+
+    @Override
+    public int pushTask(Task task) throws ManagerSaveException {
+        int id = super.pushTask(task);
+        save();
+        return id;
+    }
+
+    public void save() {
         if (taskMaster.isEmpty()) {
             throw new ManagerSaveException("Нет задач для сохранения");
         }
-        try (FileWriter fileWriter = new FileWriter(filePath, StandardCharsets.UTF_8, true)) {
-            for (Task task : taskMaster.values()) {
-                fileWriter.write(task.toString() + "\n");
 
-                if (task.getTaskClass() == Class.EPIC) {
-                    Epic epic = (Epic) task;
-                    for (Subtask sub : epic.getSubMap().values()) {
-                        fileWriter.write(sub.toString() + "\n");
+        Epic currentEpic = null;
+        ArrayList<Task> savedTasks = new ArrayList<>();
+
+        // Чтение существующих задач из файла
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath, StandardCharsets.UTF_8))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (!line.trim().isEmpty()) {
+                    Task task = fromString(line);
+                    if (task != null) {
+                        if (task.getTaskClass() == Class.EPIC) {
+                            currentEpic = (Epic) task;
+                        } else if (task.getTaskClass() == Class.SUBTASK) {
+                            if (currentEpic != null) {
+                                currentEpic.getSubMap().put(task.getId(), (Subtask) task);
+                                ((Subtask) task).setMotherId(currentEpic);
+                            }
+                        }
+                        savedTasks.add(task);
                     }
                 }
             }
         } catch (IOException e) {
-            System.out.println("Ошибка записи в файл\n" + e.getStackTrace());
+            throw new ManagerSaveException("Ошибка чтения файла " + filePath);
+        }
+
+        // Запись новых задач в файл
+        try (BufferedWriter fileWriter = new BufferedWriter(new FileWriter(filePath, StandardCharsets.UTF_8, true))) {
+            for (Task task : taskMaster.values()) {
+                if (!savedTasks.contains(task)) {
+                    fileWriter.write(task.toString() + "\n");
+                }
+            }
+        } catch (IOException e) {
+            throw new ManagerSaveException("Ошибка записи в файл " + filePath);
         }
     }
 
-    private void loadFromFile(String path) {
+    private void loadFromFile(String filePath) {
         Epic currentEpic = null; // Сброс текущего эпика перед началом чтения файла
-        try (BufferedReader br = new BufferedReader(new FileReader(path, StandardCharsets.UTF_8))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath, StandardCharsets.UTF_8))) {
             String line;
             while ((line = br.readLine()) != null) {
                 if (!line.trim().isEmpty()) { // Проверка на пустоту строки
@@ -58,21 +94,28 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                         if (!taskMaster.containsKey(task.getId())) {
                             taskMaster.put(task.getId(), task);
 
+                            if (taskMaster.isEmpty()) {
+                                throw new ManagerSaveException("Задачи не сохранились");
+                            }
+
                             if (task.getTaskClass() == Class.EPIC) {
                                 currentEpic = (Epic) task;
+
                             } else if (task.getTaskClass() == Class.SUBTASK) {
                                 if (currentEpic != null) {
                                     currentEpic.getSubMap().put(task.getId(), (Subtask) task);
                                     ((Subtask) task).setMotherId(currentEpic);
                                 }
                             }
+                            setManagerId(task.getId());
+                            task = null;
                         }
                     }
                 }
             }
 
         } catch (IOException e) {
-            System.out.println("Ошибка чтения файла: " + e.getMessage());
+            throw new ManagerSaveException("Ошибка чтения файла " + filePath);
         }
     }
 
@@ -108,5 +151,23 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         task.setStatus(status);
 
         return task;
+    }
+
+    public static boolean isCsvFileEmpty(String filePath) {
+        File csvFile = new File(filePath);
+
+        // Проверка, существует ли файл
+        if (!csvFile.exists() || !csvFile.isFile()) {
+            System.out.println("Файл не найден или это не файл.");
+            return true; // Считаем файл пустым, если он не существует
+        }
+
+        try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
+            // Проверяем первую строку файла
+            String firstLine = br.readLine();
+            return firstLine == null || firstLine.trim().isEmpty(); // Если первая строка отсутствует или пуста
+        } catch (IOException e) {
+            throw new ManagerSaveException("Ошибка чтения файла " + filePath);
+        }
     }
 }

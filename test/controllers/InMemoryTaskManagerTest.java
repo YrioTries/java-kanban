@@ -123,7 +123,7 @@ public class InMemoryTaskManagerTest {
 
 
     @Test
-    void addNewTask() {
+    void addNewTask() throws IOException {
         Task task3 = new Task("Test addNewTask", "Test addNewTask description");
         test.pushTask(task3);
 

@@ -4,9 +4,7 @@ import classes.Epic;
 import classes.enums.Status;
 import classes.Subtask;
 import classes.Task;
-import exeptions.ManagerSaveException;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 public interface TaskManager {
@@ -27,11 +25,11 @@ public interface TaskManager {
 
     void updateTask(Task task);
 
-    int pushTask(Task task) throws IOException, ManagerSaveException;
+    int pushTask(Task task);
 
-    int pushEpic(Epic epic) throws IOException, ManagerSaveException;
+    int pushEpic(Epic epic);
 
-    int pushSub(Epic epic, Subtask sub) throws IOException, ManagerSaveException;
+    int pushSub(Epic epic, Subtask sub);
 
     Task serchTask(int searchingId);
 
