@@ -1,4 +1,4 @@
-package classes;
+package classes.tasks;
 
 import classes.enums.Class;
 
@@ -11,8 +11,8 @@ public class Subtask extends Task {
     }
 
     @Override
-    public classes.enums.Class getTaskClass() {
-        return Class.SUBTASK; // Исправлено на Class.SUBTASK
+    public Class getTaskClass() {
+        return Class.SUBTASK;
     }
 
     public void setMotherId(Epic epic) {

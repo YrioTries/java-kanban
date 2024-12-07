@@ -1,7 +1,9 @@
 package controllers;
 
-import classes.*;
 import classes.enums.Class;
+import classes.tasks.Epic;
+import classes.tasks.Subtask;
+import classes.tasks.Task;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -118,9 +120,7 @@ public class InMemoryTaskManagerTest {
         epic1.setId(id);
     }
 
-
     /////////////////////////////////////////// serchTask(id) ///////////////////////////////////////////
-
 
     @Test
     void addNewTask() throws IOException {
@@ -178,8 +178,7 @@ public class InMemoryTaskManagerTest {
 
     @Test
     public void shouldBe_0IDForSub1() {
-        int id = sub1.getId();
-        Integer result = test.getMotherID(id);
+        Integer result = sub1.getMotherId();
 
         assertNotNull(result);
         assertEquals(epic1.getId(), result) ;
@@ -187,8 +186,7 @@ public class InMemoryTaskManagerTest {
 
     @Test
     public void shouldBe_0IDSub2() {
-        int id = sub2.getId();
-        Integer result = test.getMotherID(id);
+        Integer result = sub2.getMotherId();
 
         assertNotNull(result);
         assertEquals(epic1.getId(), result) ;
@@ -196,8 +194,7 @@ public class InMemoryTaskManagerTest {
 
     @Test
     public void shouldBe_3IDSub3() {
-        Integer id = sub3.getId();
-        Integer result = test.getMotherID(id);
+        Integer result = sub3.getMotherId();
 
         assertNotNull(result);
         assertEquals(epic2.getId(), result) ;
@@ -206,18 +203,10 @@ public class InMemoryTaskManagerTest {
     @Test
     public void shouldNotBeEquals() {
         int id = sub3.getId();
-        Integer result = test.getMotherID(id);
+        Integer result = sub3.getMotherId();
 
         assertNotNull(result);
         assertNotEquals(epic1.getId(), result) ;
-    }
-
-    @Test
-    public void shouldBeNull() {
-        int id = 150;
-        Integer result = test.getMotherID(id);
-
-        assertNull(result);
     }
 ///////////////////////////////////////////// ============== ///////////////////////////////////////////
 }

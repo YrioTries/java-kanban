@@ -1,29 +1,32 @@
 package controllers;
 
-import classes.*;
 import classes.enums.Class;
 import classes.enums.Status;
+import classes.tasks.Epic;
+import classes.tasks.Subtask;
+import classes.tasks.Task;
 import controllers.interfaces.HistoryManager;
 import controllers.interfaces.TaskManager;
 
+import java.time.Duration;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.TreeSet;
 
 public class InMemoryTaskManager implements TaskManager {
 
-    private int id;
 
+    private int id;
     private final HistoryManager historyManager;
 
-    //private final TaskManager fileManager;
-
     public HashMap<Integer, Task> taskMaster;
+    private TreeSet<Task> prioritizedTasks;
 
     public InMemoryTaskManager() {
         historyManager = Managers.getDefaultHistory();
-        //fileManager = Managers.getDefaultFile();
-
         taskMaster = new HashMap<>();
+        prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime));
         id = 0;
     }
 
@@ -66,24 +69,25 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public int pushTask(Task task) {
-        final int ident = id++;
-        task.setId(ident);
+        if (prioritizedTasks.stream().anyMatch(existingTask -> isOverlapping(existingTask, task))) { ////////////////////////////////////////////////
+            throw new IllegalArgumentException("Задача пересекается с существующей задачей по времени выполнения");
+        }
+
+        task.setId(id++);
         taskMaster.put(task.getId(), task);
         return task.getId();
     }
 
     @Override
     public int pushEpic(Epic epic) {
-        final int ident = id++;
-        epic.setId(ident);
+        epic.setId(id++);
         taskMaster.put(epic.getId(), epic);
         return epic.getId();
     }
 
     @Override
     public int pushSub(Epic epic, Subtask sub) {
-        final int ident = id++;
-        sub.setId(ident);
+        sub.setId(id++);
         epic.getSubMap().put(sub.getId(), sub);
         sub.setMotherId(epic);
         changeStatusEpic(epic);
@@ -105,6 +109,14 @@ public class InMemoryTaskManager implements TaskManager {
             return taskMaster.get(searchingId);
         }
         return null;
+    }
+
+    public ArrayList<Task> getPrioritizedTasks() {
+        return new ArrayList<>(prioritizedTasks);
+    }
+
+    private boolean isOverlapping(Task task1, Task task2) {
+        return task1.getStartTime().isBefore(task2.getEndTime()) && task1.getEndTime().isAfter(task2.getStartTime());
     }
 
     @Override
@@ -148,18 +160,27 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void changeStatusSub(Status status, Subtask sub) {
         sub.setStatus(status);
-        changeStatusEpic((Epic) serchTask(getMotherID(sub.getId())));
+        changeStatusEpic((Epic) serchTask(sub.getMotherId())); // Нужно ли в самом эпике менять статус или это один итот же объект?
+
+        if (status == Status.DONE) {
+            sub.setDuration();
+        }
     }
 
     @Override
     public void changeStatusTask(Status status, Task task) {
         task.setStatus(status);
+
+        if (status == Status.DONE) {
+            task.setDuration();
+        }
     }
 
     @Override
     public void changeStatusEpic(Epic epic) {
         boolean setNew = true;
         boolean setDone = true;
+        Duration duration = Duration.ZERO;
 
         for (Subtask sub : epic.getSubMap().values()) {
             if (sub.getStatus() != Status.NEW) {
@@ -168,10 +189,12 @@ public class InMemoryTaskManager implements TaskManager {
             if (sub.getStatus() != Status.DONE) {
                 setDone = false;
             }
+            if (sub.getDuration() != Duration.ZERO) duration = duration.plus(sub.getDuration());
         }
 
         if (setDone) {
             epic.setStatus(Status.DONE);
+            epic.setDuration(duration);
         } else if (setNew) {
             epic.setStatus(Status.NEW);
         } else {
@@ -179,18 +202,5 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    @Override
-    public Integer getMotherID(Integer id) {
-        for (Task ep : getTaskMaster().values()) {
-            if (ep.getTaskClass() == Class.EPIC) {
-                Epic epic = (Epic) ep;
-                for (Subtask subtask : epic.getSubMap().values()) {
-                    if (id == subtask.getId()) {
-                        return epic.getId();
-                    }
-                }
-            }
-        }
-        return null;
-    }
+
 }

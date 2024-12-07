@@ -1,9 +1,8 @@
 package controllers;
 
-import classes.Epic;
-import classes.Subtask;
-import classes.Task;
-import org.junit.jupiter.api.BeforeAll;
+import classes.tasks.Epic;
+import classes.tasks.Subtask;
+import classes.tasks.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

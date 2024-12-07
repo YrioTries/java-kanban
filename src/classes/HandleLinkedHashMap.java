@@ -1,5 +1,7 @@
 package classes;
 
+import classes.tasks.Task;
+
 import java.util.*;
 
 public class HandleLinkedHashMap {

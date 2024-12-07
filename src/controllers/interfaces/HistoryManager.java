@@ -1,6 +1,6 @@
 package controllers.interfaces;
 
-import classes.Task;
+import classes.tasks.Task;
 
 import java.util.ArrayList;
 

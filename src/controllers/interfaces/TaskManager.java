@@ -1,9 +1,9 @@
 package controllers.interfaces;
 
-import classes.Epic;
+import classes.tasks.Epic;
 import classes.enums.Status;
-import classes.Subtask;
-import classes.Task;
+import classes.tasks.Subtask;
+import classes.tasks.Task;
 
 import java.util.ArrayList;
 
@@ -34,6 +34,4 @@ public interface TaskManager {
     Task serchTask(int searchingId);
 
     ArrayList<Task> getTaskList();
-
-    Integer getMotherID(Integer id);
 }

@@ -1,8 +1,10 @@
-package classes;
+package classes.tasks;
 
 import classes.enums.Class;
 import classes.enums.Status;
 import java.util.Objects;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
 public class Task {
 
@@ -10,11 +12,22 @@ public class Task {
     private String title;
     private String description;
     private Status status;
+    private LocalDateTime startTime;
+    private Duration duration;
 
     public Task(String title, String description) {
         this.title = title;
         this.description = description;
         this.status = Status.NEW;
+        setStartTime();
+        this.duration = Duration.ZERO;
+    }
+
+    public LocalDateTime getEndTime() {
+        if (startTime != null && duration != null) {
+            return startTime.plus(duration);
+        }
+        return null;
     }
 
     public Class getTaskClass() {
@@ -53,9 +66,38 @@ public class Task {
         return id;
     }
 
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    protected void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    protected void setStartTime() {
+        if (this.getTaskClass() == Class.EPIC){
+            this.startTime = null;
+        } else {
+            this.startTime = LocalDateTime.now();
+        }
+    }
+
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public void setDuration() {
+        duration = Duration.between(startTime, LocalDateTime.now());
+    }
+
     @Override
     public String toString() {
-        return this.getId() + "," + this.getTitle() + "," + this.getTaskClass() + "," + this.getStatus() + "," + this.getDescription();
+        return this.getId() + "," + this.getTitle() + "," + this.getTaskClass() + "," + this.getStatus() + ","
+                + this.getDescription() + "," + this.getStartTime() + "," + this.getDuration().toMinutes();
     }
 
     @Override

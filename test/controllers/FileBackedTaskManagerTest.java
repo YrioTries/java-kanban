@@ -1,15 +1,11 @@
 package controllers;
 
-import classes.Epic;
-import classes.Subtask;
-import classes.Task;
-import controllers.interfaces.HistoryManager;
+import classes.tasks.Epic;
+import classes.tasks.Subtask;
+import classes.tasks.Task;
 import exeptions.ManagerSaveException;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class FileBackedTaskManagerTest {
 

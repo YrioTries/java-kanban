@@ -3,10 +3,14 @@ package controllers;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
-import classes.*;
 import classes.enums.Class;
 import classes.enums.Status;
+import classes.tasks.Epic;
+import classes.tasks.Subtask;
+import classes.tasks.Task;
 import exeptions.ManagerSaveException;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
@@ -15,7 +19,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     public FileBackedTaskManager(String filePath) {
         super();
-        this.filePath = filePath; //Пока временный вариант, нужно через параметр
+        this.filePath = filePath;
         loadFromFile(filePath);
     }
 
@@ -84,11 +88,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     private void loadFromFile(String filePath) {
-        Epic currentEpic = null; // Сброс текущего эпика перед началом чтения файла
         try (BufferedReader br = new BufferedReader(new FileReader(filePath, StandardCharsets.UTF_8))) {
+            Epic currentEpic = null;
             String line;
+
             while ((line = br.readLine()) != null) {
-                if (!line.trim().isEmpty()) { // Проверка на пустоту строки
+                if (!line.trim().isEmpty()) {
                     Task task = fromString(line);
                     if (task != null) {
                         if (!taskMaster.containsKey(task.getId())) {
@@ -108,12 +113,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                                 }
                             }
                             setManagerId(task.getId());
-                            task = null;
                         }
                     }
                 }
             }
-
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка чтения файла " + filePath);
         }
@@ -122,7 +125,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     public Task fromString(String line) {
         String[] param = line.split(",");
 
-        if (param.length != 5) {
+        if (param.length != 7) {
             throw new IllegalArgumentException("Неверный формат строки: " + line);
         }
 
@@ -131,6 +134,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         Class taskClass = Class.valueOf(param[2]);
         Status status = Status.valueOf(param[3]);
         String description = param[4];
+        LocalDateTime startTime = LocalDateTime.parse(param[5]);
+        Duration duration = Duration.ofMinutes(Long.parseLong(param[6]));
 
         Task task;
         switch (taskClass) {
@@ -149,6 +154,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         task.setId(id);
         task.setStatus(status);
+        task.setDuration(duration);
 
         return task;
     }
