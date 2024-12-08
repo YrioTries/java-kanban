@@ -2,6 +2,7 @@ package controllers;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.time.DateTimeException;
 import java.util.ArrayList;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -26,13 +27,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     @Override
     public int pushSub(Epic epic, Subtask subtask) throws ManagerSaveException {
         int id = super.pushSub(epic, subtask);
-        save();
-        return id;
-    }
-
-    @Override
-    public int pushEpic(Epic epic) throws ManagerSaveException {
-        int id = super.pushEpic(epic);
         save();
         return id;
     }
@@ -134,7 +128,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         Class taskClass = Class.valueOf(param[2]);
         Status status = Status.valueOf(param[3]);
         String description = param[4];
-        LocalDateTime startTime = LocalDateTime.parse(param[5]);
+
+        try {
+            if (!"null".equals(param[5])) {
+                LocalDateTime startTime = LocalDateTime.parse(param[5]);
+            }
+
+        } catch (DateTimeException e) {
+            throw new IllegalArgumentException("Ошибка парсинга даты или времени: " + line, e);
+        }
         Duration duration = Duration.ofMinutes(Long.parseLong(param[6]));
 
         Task task;
