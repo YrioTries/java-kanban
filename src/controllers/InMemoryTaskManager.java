@@ -13,6 +13,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 public class InMemoryTaskManager implements TaskManager {
 
@@ -67,6 +68,14 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+    public ArrayList<Task> getPrioritizedTasks() {
+        return new ArrayList<>(prioritizedTasks);
+    }
+
+    private boolean isOverlapping(Task task1, Task task2) {
+        return task1.getStartTime().isBefore(task2.getEndTime()) && task1.getEndTime().isAfter(task2.getStartTime());
+    }
+
     @Override
     public int pushTask(Task task) {
         if (prioritizedTasks.stream().anyMatch(existingTask -> isOverlapping(existingTask, task))) { ////////////////////////////////////////////////
@@ -88,9 +97,13 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public int pushSub(Epic epic, Subtask sub) {
         sub.setId(id++);
+
+        if (epic.getSubMap().isEmpty()) epic.setStartTime(sub.getStartTime());
+
         epic.getSubMap().put(sub.getId(), sub);
         sub.setMotherId(epic);
         changeStatusEpic(epic);
+
         taskMaster.put(sub.getId(), sub);
         return sub.getId();
     }
@@ -99,6 +112,8 @@ public class InMemoryTaskManager implements TaskManager {
     public void updateTask(Task task) {
         if (task != null) {
             taskMaster.put(task.getId(), task);
+            prioritizedTasks.removeIf(t -> t.getId() == task.getId());
+            prioritizedTasks.add(task);
         }
     }
 
@@ -111,50 +126,27 @@ public class InMemoryTaskManager implements TaskManager {
         return null;
     }
 
-    public ArrayList<Task> getPrioritizedTasks() {
-        return new ArrayList<>(prioritizedTasks);
-    }
-
-    private boolean isOverlapping(Task task1, Task task2) {
-        return task1.getStartTime().isBefore(task2.getEndTime()) && task1.getEndTime().isAfter(task2.getStartTime());
-    }
-
     @Override
     public ArrayList<Subtask> getSubtaskList() {
-        ArrayList<Subtask> subTusk = new ArrayList<>();
-        for (Task tasks : taskMaster.values()) {
-            Epic epic = (Epic) tasks;
-            if (epic.getTaskClass() == Class.EPIC) {
-                subTusk.addAll(epic.getSubMap().values());
-            }
-        }
-        return subTusk;
+        return taskMaster.values().stream()
+                .filter(task -> task.getTaskClass() == Class.SUBTASK)
+                .map(task -> (Subtask) task)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     @Override
     public ArrayList<Epic> getEpicList() {
-        ArrayList<Epic> tasks = new ArrayList<>();
-        for (int i = 0; i < id; i++) {
-            if (taskMaster.containsKey(i)) {
-                if (taskMaster.get(i).getTaskClass() == Class.EPIC) {
-                    tasks.add((Epic) (taskMaster.get(i)));
-                }
-            }
-        }
-        return tasks;
+        return taskMaster.values().stream()
+                .filter(task -> task.getTaskClass() == Class.EPIC)
+                .map(task -> (Epic) task)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     @Override
     public ArrayList<Task> getTaskList() {
-        ArrayList<Task> tasks = new ArrayList<>();
-        for (int i = 0; i < id; i++) {
-            if (taskMaster.containsKey(i)) {
-                if (taskMaster.get(i).getTaskClass() == Class.TASK) {
-                    tasks.add(taskMaster.get(i));
-                }
-            }
-        }
-        return tasks;
+        return taskMaster.values().stream()
+                .filter(task -> task.getTaskClass() == Class.TASK)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     @Override
@@ -201,6 +193,4 @@ public class InMemoryTaskManager implements TaskManager {
             epic.setStatus(Status.IN_PROGRESS);
         }
     }
-
-
 }

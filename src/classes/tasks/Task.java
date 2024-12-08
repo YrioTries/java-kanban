@@ -70,14 +70,12 @@ public class Task {
         return startTime;
     }
 
-    protected void setStartTime(LocalDateTime startTime) {
+    public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
     }
 
     protected void setStartTime() {
-        if (this.getTaskClass() == Class.EPIC){
-            this.startTime = null;
-        } else {
+        if (this.getTaskClass() != Class.EPIC){
             this.startTime = LocalDateTime.now();
         }
     }
