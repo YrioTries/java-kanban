@@ -27,7 +27,7 @@ public class InMemoryTaskManager implements TaskManager {
     public InMemoryTaskManager() {
         historyManager = Managers.getDefaultHistory();
         taskMaster = new HashMap<>();
-        prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime));
+        prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime, Comparator.nullsLast(Comparator.naturalOrder())));
         id = 0;
     }
 
@@ -78,12 +78,10 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public int pushTask(Task task) {
-        if (prioritizedTasks.stream().anyMatch(existingTask -> isOverlapping(existingTask, task))) { ////////////////////////////////////////////////
-            throw new IllegalArgumentException("Задача пересекается с существующей задачей по времени выполнения");
-        }
-
         task.setId(id++);
+
         taskMaster.put(task.getId(), task);
+        prioritizedTasks.add(task);
         return task.getId();
     }
 
@@ -91,12 +89,14 @@ public class InMemoryTaskManager implements TaskManager {
     public int pushEpic(Epic epic) {
         epic.setId(id++);
         taskMaster.put(epic.getId(), epic);
+        prioritizedTasks.add(epic);
         return epic.getId();
     }
 
     @Override
     public int pushSub(Epic epic, Subtask sub) {
         sub.setId(id++);
+
 
         if (epic.getSubMap().isEmpty()) epic.setStartTime(sub.getStartTime());
 
@@ -105,6 +105,7 @@ public class InMemoryTaskManager implements TaskManager {
         changeStatusEpic(epic);
 
         taskMaster.put(sub.getId(), sub);
+        prioritizedTasks.add(sub);
         return sub.getId();
     }
 
@@ -145,7 +146,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public ArrayList<Task> getTaskList() {
         return taskMaster.values().stream()
-                .filter(task -> task.getTaskClass() == Class.TASK)
+                .filter(task ->  Class.TASK.equals(task.getTaskClass()))
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 

@@ -8,6 +8,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -123,7 +125,7 @@ public class InMemoryTaskManagerTest {
     /////////////////////////////////////////// serchTask(id) ///////////////////////////////////////////
 
     @Test
-    void addNewTask() throws IOException {
+    void addNewTask() throws IOException { ////////////////////// Работает когда запускатся только он
         Task task3 = new Task("Test addNewTask", "Test addNewTask description");
         test.pushTask(task3);
 
@@ -209,4 +211,32 @@ public class InMemoryTaskManagerTest {
         assertNotEquals(epic1.getId(), result) ;
     }
 ///////////////////////////////////////////// ============== ///////////////////////////////////////////
+
+    @Test
+    public void testGetPrioritizedTasks() {
+        task1.setStartTime(LocalDateTime.now());
+        task1.setDuration(Duration.ofMinutes(30));
+
+        task2.setStartTime(LocalDateTime.now().plusHours(1));
+        task2.setDuration(Duration.ofMinutes(30));
+
+        ArrayList<Task> prioritizedTasks = test.getPrioritizedTasks();
+        assertEquals(2, prioritizedTasks.size());
+        assertEquals(task1, prioritizedTasks.get(0));
+        assertEquals(task2, prioritizedTasks.get(1));
+    }
+
+    @Test
+    public void testOverlappingTasks() {
+        Task task1 = new Task("Task 1", "Description 1");
+        task1.setStartTime(LocalDateTime.now());
+        task1.setDuration(Duration.ofMinutes(60));
+        Task task2 = new Task("Task 2", "Description 2");
+        task2.setStartTime(LocalDateTime.now().plusMinutes(30));
+        task2.setDuration(Duration.ofMinutes(60));
+        test.pushTask(task1);
+        assertThrows(IllegalArgumentException.class, () -> {
+            test.pushTask(task2);
+        });
+    }
 }
