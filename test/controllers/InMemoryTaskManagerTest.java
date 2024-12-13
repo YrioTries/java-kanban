@@ -5,6 +5,7 @@ import classes.tasks.Epic;
 import classes.tasks.Subtask;
 import classes.tasks.Task;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -16,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class InMemoryTaskManagerTest {
 
-    static InMemoryTaskManager test = new InMemoryTaskManager();
+    static InMemoryTaskManager test;
 
     static Epic epic1 = new Epic("1.Эпик", "простой");
     static Subtask sub1 = new Subtask("1.1.Подзадача", "средняя");
@@ -28,57 +29,20 @@ public class InMemoryTaskManagerTest {
     static Task task1 = new Task("1.Задание", "сложноватое");
     static Task task2 = new Task("2.Задание", "сложноватое");
 
-    public void printAllTasks(){
-        System.out.println("///////////////////////////////_ALL_TASKS_///////////////////////////////");
-        for (int i = 0; i < test.taskMaster.size(); i++) {
-            if (test.taskMaster.containsKey(i) && test.taskMaster.get(i) != null) {
-                if (test.taskMaster.get(i) instanceof Epic) {
-                    Epic epic = (Epic) test.taskMaster.get(i);
-                    System.out.println("\nЭпик: " + epic.getTitle() + " c id: "
-                            + epic.getId() + " и статусом: "
-                            + epic.getStatus());
+    @BeforeEach
+    public void pushTasks() throws IOException {
+        test = new InMemoryTaskManager();
 
-                    for (Subtask sub : epic.getSubMap().values()) {
-                        System.out.println("Подзадача: " + sub.getTitle() + " c id: " + sub.getId() + " и статусом: "
-                                + sub.getStatus());
-                    }
-                    System.out.println();
-
-                } else if (test.taskMaster.get(i).getTaskClass() == Class.TASK) {
-                    Task task = (Task) test.taskMaster.get(i);
-                    System.out.println("Задача: " + task.getTitle() + " c id: " + task.getId()
-                            + " и статусом: " + task.getStatus());
-                }
-            }
-
-            System.out.println("История посешений: ");
-            System.out.println("===============================");
-            for (Object obj : test.getHistory()) {
-
-                Task task = (Task) obj;
-                if (task instanceof Epic) {
-
-                    System.out.println("Эпик с id: " + task.getId());
-                } else if (task instanceof Subtask) {
-
-                    System.out.println("Подзадание с id: " + task.getId());
-                } else {
-
-                    System.out.println("Задание с id: " + task.getId());
-                }
-            }
-            System.out.println("===============================");
-        }
-        System.out.println("\n////////////////////////////////////////////////////////////////////////");
-    }
-
-    @BeforeAll
-    public static void pushTasks() throws IOException {
         test.pushEpic(epic1);
-        test.pushSub(epic1, sub1);
-        test.pushSub(epic1, sub2);
+        test.pushSub(sub1);
+        test.pushSub(sub2);
+        test.addSubToEpic(epic1, sub1);
+        test.addSubToEpic(epic1, sub2);
+
         test.pushEpic(epic2);
-        test.pushSub(epic2, sub3);
+        test.pushSub(sub3);
+        test.addSubToEpic(epic2,sub3);
+
         test.pushTask(task1);
         test.pushTask(task2);
     }

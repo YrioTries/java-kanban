@@ -25,8 +25,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public int pushSub(Epic epic, Subtask subtask) throws ManagerSaveException {
-        int id = super.pushSub(epic, subtask);
+    public int pushSub(Subtask subtask) throws ManagerSaveException {
+        int id = super.pushSub(subtask);
         save();
         return id;
     }

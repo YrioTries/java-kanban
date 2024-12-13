@@ -25,11 +25,14 @@ public class FileBackedTaskManagerTest {
             Task task2 = new Task("2.Задание", "сложноватое");
 
             test.pushEpic(epic1);
-            test.pushSub(epic1, sub1);
-            test.pushSub(epic1, sub2);
+            test.pushSub(sub1);
+            test.pushSub(sub2);
+            test.addSubToEpic(epic1, sub1);
+            test.addSubToEpic(epic1, sub2);
 
             test.pushEpic(epic2);
-            test.pushSub(epic2, sub3);
+            test.pushSub(sub3);
+            test.addSubToEpic(epic2, sub3);
 
             test.pushTask(task1);
             test.pushTask(task2);

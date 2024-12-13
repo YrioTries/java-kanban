@@ -29,7 +29,9 @@ public interface TaskManager {
 
     int pushEpic(Epic epic);
 
-    int pushSub(Epic epic, Subtask sub);
+    int pushSub(Subtask sub);
+
+    boolean addSubToEpic(Epic epic, Subtask sub);
 
     Task serchTask(int searchingId);
 
