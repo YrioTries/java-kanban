@@ -1,10 +1,8 @@
 package controllers;
 
-import classes.enums.Class;
 import classes.tasks.Epic;
 import classes.tasks.Subtask;
 import classes.tasks.Task;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -103,6 +101,7 @@ public class InMemoryTaskManagerTest {
         assertNotNull(tasks, "Задачи не возвращаются.");
         assertEquals(3, tasks.size(), "Неверное количество задач.");
         assertEquals(task3, tasks.get(2), "Задачи не совпадают.");
+        test.deleteTask(task3.getId());
     }
 
     @Test
@@ -130,6 +129,7 @@ public class InMemoryTaskManagerTest {
 
         assertNotNull(result);
         assertEquals(sub1, result);
+        result = null;
     }
 
     @Test
@@ -147,7 +147,8 @@ public class InMemoryTaskManagerTest {
         Integer result = sub1.getMotherId();
 
         assertNotNull(result);
-        assertEquals(epic1.getId(), result) ;
+        assertEquals(epic1.getId(), result);
+        result = null;
     }
 
     @Test
@@ -155,7 +156,7 @@ public class InMemoryTaskManagerTest {
         Integer result = sub2.getMotherId();
 
         assertNotNull(result);
-        assertEquals(epic1.getId(), result) ;
+        assertEquals(epic1.getId(), result);
     }
 
     @Test
@@ -177,14 +178,18 @@ public class InMemoryTaskManagerTest {
 ///////////////////////////////////////////// ============== ///////////////////////////////////////////
 
     @Test
-    public void testGetPrioritizedTasks() {
+    public void testGetPrioritizedTasks() throws IllegalArgumentException{
         task1.setStartTime(LocalDateTime.now());
         task1.setDuration(Duration.ofMinutes(30));
+        test.updateTask(task1);
 
         task2.setStartTime(LocalDateTime.now().plusHours(1));
         task2.setDuration(Duration.ofMinutes(30));
+        test.updateTask(task2);
 
         ArrayList<Task> prioritizedTasks = test.getPrioritizedTasks();
+
+        System.out.println(prioritizedTasks);
         assertEquals(2, prioritizedTasks.size());
         assertEquals(task1, prioritizedTasks.get(0));
         assertEquals(task2, prioritizedTasks.get(1));
@@ -195,10 +200,12 @@ public class InMemoryTaskManagerTest {
         Task task1 = new Task("Task 1", "Description 1");
         task1.setStartTime(LocalDateTime.now());
         task1.setDuration(Duration.ofMinutes(60));
+
         Task task2 = new Task("Task 2", "Description 2");
         task2.setStartTime(LocalDateTime.now().plusMinutes(30));
         task2.setDuration(Duration.ofMinutes(60));
         test.pushTask(task1);
+
         assertThrows(IllegalArgumentException.class, () -> {
             test.pushTask(task2);
         });

@@ -147,8 +147,10 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public boolean addSubToEpic(Epic epic, Subtask sub) {
         if (!epic.getSubMap().containsKey(sub.getId())) {
-            if (epic.getSubMap().isEmpty()) epic.setStartTime(sub.getStartTime());
+
             epic.getSubMap().put(sub.getId(), sub);
+            if (epic.getSubMapSize() == 1) epic.setStartTime(sub.getStartTime());
+
             sub.setMotherId(epic);
             changeStatusEpic(epic);
             return epic.getSubMap().containsKey(sub.getId());
@@ -172,10 +174,10 @@ public class InMemoryTaskManager implements TaskManager {
             throw e; // прокидаем исключение дальше
         }
 
-
-
-        taskMaster.put(sub.getId(), sub);
-        prioritizedTasks.add(sub);
+        if (sub.getStartTime() != null) {
+            taskMaster.put(sub.getId(), sub);
+            prioritizedTasks.add(sub);
+        }
         return sub.getId();
     }
 
@@ -193,10 +195,12 @@ public class InMemoryTaskManager implements TaskManager {
                 System.err.println(e.getMessage());
                 throw e; // прокидаем исключение дальше
             }
+            if (task.getStartTime() != null) {
+                taskMaster.put(task.getId(), task);
+                prioritizedTasks.removeIf(t -> t.getId() == task.getId());
+                prioritizedTasks.add(task);
+            }
 
-            taskMaster.put(task.getId(), task);
-            prioritizedTasks.removeIf(t -> t.getId() == task.getId());
-            prioritizedTasks.add(task);
         }
     }
 
@@ -264,12 +268,11 @@ public class InMemoryTaskManager implements TaskManager {
             if (sub.getStatus() != Status.DONE) {
                 setDone = false;
             }
-            if (sub.getDuration() != Duration.ZERO) duration = duration.plus(sub.getDuration());
         }
 
         if (setDone) {
             epic.setStatus(Status.DONE);
-            epic.setDuration(duration);
+            epic.setEndTime(epic.getSubtask(epic.getSubMapSize()));
         } else if (setNew) {
             epic.setStatus(Status.NEW);
         } else {
