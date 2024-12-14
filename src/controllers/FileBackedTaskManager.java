@@ -128,36 +128,23 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         Class taskClass = Class.valueOf(param[2]);
         Status status = Status.valueOf(param[3]);
         String description = param[4];
-
-        try {
-            if (!"null".equals(param[5])) {
-                LocalDateTime startTime = LocalDateTime.parse(param[5]);
-            }
-
-        } catch (DateTimeException e) {
-            throw new IllegalArgumentException("Ошибка парсинга даты или времени: " + line, e);
-        }
-        Duration duration = Duration.ofMinutes(Long.parseLong(param[6]));
+        long duration = Long.parseLong(param[5]);
+        LocalDateTime startTime = LocalDateTime.parse(param[6]);
 
         Task task;
         switch (taskClass) {
             case TASK:
-                task = new Task(title, description);
+                task = new Task(title, description, duration, startTime);
                 break;
             case EPIC:
                 task = new Epic(title, description);
                 break;
             case SUBTASK:
-                task = new Subtask(title, description);
+                task = new Subtask(title, description, duration, startTime);
                 break;
             default:
                 throw new IllegalArgumentException("Неизвестный тип задачи: " + taskClass);
         }
-
-        task.setId(id);
-        task.setStatus(status);
-        task.setDuration(duration);
-
         return task;
     }
 

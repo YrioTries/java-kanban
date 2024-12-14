@@ -2,6 +2,8 @@ package classes.tasks;
 
 import classes.enums.Class;
 
+import java.time.Duration;
+import java.time.chrono.ChronoLocalDateTime;
 import java.util.HashMap;
 import java.time.LocalDateTime;
 
@@ -11,7 +13,7 @@ public class Epic extends Task {
     private LocalDateTime endTime;
 
     public Epic(String title, String description) {
-        super(title, description);
+        super(title, description, 0, null);
         epicSubtasks = new HashMap<>();
         endTime = null;
     }
@@ -25,7 +27,7 @@ public class Epic extends Task {
         return epicSubtasks;
     }
 
-    public Subtask getSubtask(int id) {
+    public Subtask getSubTask(int id) {
         return epicSubtasks.get(id);
     }
 
@@ -35,18 +37,5 @@ public class Epic extends Task {
 
     public void removeSubtask(int subtaskId) {
         epicSubtasks.remove(subtaskId);
-    }
-
-    public int getSubMapSize() {
-        return epicSubtasks.size();
-    }
-
-    public void setEndTime(Subtask sub) {
-        endTime = sub.getEndTime();
-    }
-
-    @Override
-    public LocalDateTime getEndTime() {
-        return  endTime;
     }
 }

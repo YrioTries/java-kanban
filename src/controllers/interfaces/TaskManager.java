@@ -21,7 +21,7 @@ public interface TaskManager {
 
     void changeStatusTask(Status status, Task task);
 
-    void changeStatusEpic(Epic epic);
+    void updateEpicParam(Epic epic);
 
     void updateTask(Task task);
 

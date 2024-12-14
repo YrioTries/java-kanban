@@ -2,12 +2,15 @@ package classes.tasks;
 
 import classes.enums.Class;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+
 public class Subtask extends Task {
 
     private int motherId;
 
-    public Subtask(String title, String description) {
-        super(title, description);
+    public Subtask(String title, String description, long duration, LocalDateTime startTime) {
+        super(title, description, duration, startTime);
     }
 
     @Override

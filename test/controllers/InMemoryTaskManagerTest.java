@@ -18,14 +18,14 @@ public class InMemoryTaskManagerTest {
     static InMemoryTaskManager test;
 
     static Epic epic1 = new Epic("1.Эпик", "простой");
-    static Subtask sub1 = new Subtask("1.1.Подзадача", "средняя");
-    static Subtask sub2 = new Subtask("1.2.Подзадача", "тяжелее");
+    static Subtask sub1 = new Subtask("1.1.Подзадача", "средняя", 15, LocalDateTime.now());
+    static Subtask sub2 = new Subtask("1.2.Подзадача", "тяжелее", 15, sub1.getEndTime());
 
     static Epic epic2 = new Epic("2.Эпик", "простой");
-    static Subtask sub3 = new Subtask("2.1.Подзадача", "норм");
+    static Subtask sub3 = new Subtask("2.1.Подзадача", "норм", 15, sub2.getEndTime());
 
-    static Task task1 = new Task("1.Задание", "сложноватое");
-    static Task task2 = new Task("2.Задание", "сложноватое");
+    static Task task1 = new Task("1.Задание", "сложноватое", 15, sub3.getEndTime());
+    static Task task2 = new Task("2.Задание", "сложноватое", 15, task1.getEndTime());
 
     @BeforeEach
     public void pushTasks() throws IOException {
@@ -88,7 +88,7 @@ public class InMemoryTaskManagerTest {
 
     @Test
     void addNewTask() throws IOException { ////////////////////// Работает когда запускатся только он
-        Task task3 = new Task("Test addNewTask", "Test addNewTask description");
+        Task task3 = new Task("Test addNewTask", "Test addNewTask description", 15, task2.getEndTime());
         test.pushTask(task3);
 
         Task savedTask = test.serchTask(task3.getId());
@@ -197,17 +197,9 @@ public class InMemoryTaskManagerTest {
 
     @Test
     public void testOverlappingTasks() {
-        Task task1 = new Task("Task 1", "Description 1");
-        task1.setStartTime(LocalDateTime.now());
-        task1.setDuration(Duration.ofMinutes(60));
-
-        Task task2 = new Task("Task 2", "Description 2");
-        task2.setStartTime(LocalDateTime.now().plusMinutes(30));
-        task2.setDuration(Duration.ofMinutes(60));
-        test.pushTask(task1);
-
-        assertThrows(IllegalArgumentException.class, () -> {
-            test.pushTask(task2);
-        });
+        int count = test.getPrioritizedTasks().size();
+        Task task = new Task("99.Задание", "сложноватое", 15, task1.getEndTime());
+        assertThrows(IllegalArgumentException.class, () -> test.pushTask(task));
+        assertEquals(count, test.getPrioritizedTasks().size());
     }
 }

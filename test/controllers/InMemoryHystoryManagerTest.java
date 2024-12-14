@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,14 +18,14 @@ public class InMemoryHystoryManagerTest {
     static InMemoryTaskManager test;
 
     Epic epic1 = new Epic("1.Эпик", "простой");
-    Subtask sub1 = new Subtask("1.1.Подзадача", "средняя");
-    Subtask sub2 = new Subtask("1.2.Подзадача", "тяжелее");
+    Subtask sub1 = new Subtask("1.1.Подзадача", "средняя", 15, LocalDateTime.now());
+    Subtask sub2 = new Subtask("1.2.Подзадача", "тяжелее", 15, sub1.getEndTime());
 
-    static Epic epic2 = new Epic("2.Эпик", "простой");
-    Subtask sub3 = new Subtask("2.1.Подзадача", "норм");
+    Epic epic2 = new Epic("2.Эпик", "простой");
+    Subtask sub3 = new Subtask("2.1.Подзадача", "норм", 15, sub2.getEndTime());
 
-    Task task1 = new Task("1.Задание", "сложноватое");
-    Task task2 = new Task("2.Задание", "сложноватое");
+    Task task1 = new Task("1.Задание", "сложноватое", 15, sub3.getEndTime());
+    Task task2 = new Task("2.Задание", "сложноватое", 15, task1.getEndTime());
 
     @BeforeEach
     public void pushTasks() throws IOException {

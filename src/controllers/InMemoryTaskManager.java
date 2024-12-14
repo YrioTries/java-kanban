@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 
 public class InMemoryTaskManager implements TaskManager {
 
-
     private int id;
     private final HistoryManager historyManager;
 
@@ -42,6 +41,65 @@ public class InMemoryTaskManager implements TaskManager {
 
     public HashMap<Integer, Task> getTaskMaster() {
         return taskMaster;
+    }
+
+    @Override
+    public int pushTask(Task task) {
+        task.setId(id++);
+
+        taskMaster.put(task.getId(), task);
+        addPrioritized(task);
+        return task.getId();
+    }
+
+    @Override
+    public int pushEpic(Epic epic) {
+        epic.setId(id++);
+        taskMaster.put(epic.getId(), epic);
+        return epic.getId();
+    }
+
+    @Override
+    public int pushSub(Subtask sub) {
+        sub.setId(id++);
+
+        taskMaster.put(sub.getId(), sub);
+        addPrioritized(sub);
+        return sub.getId();
+    }
+    @Override
+    public boolean addSubToEpic(Epic epic, Subtask sub) {
+        if (!epic.getSubMap().containsKey(sub.getId())) {
+            if (epic.getSubMap().isEmpty()) epic.setStartTime(sub.getStartTime());
+            epic.getSubMap().put(sub.getId(), sub);
+            sub.setMotherId(epic);
+            updateEpicParam(epic);
+            return epic.getSubMap().containsKey(sub.getId());
+        }
+        return false;
+    }
+
+    @Override
+    public void updateTask(Task task) {
+        if (task != null) {
+            taskMaster.put(task.getId(), task);
+            prioritizedTasks.removeIf(t -> t.getId() == task.getId());
+            prioritizedTasks.add(task);
+        }
+    }
+
+    private boolean isOverlapping(Task task1, Task task2) {
+        return task1.getStartTime().isBefore(task2.getEndTime()) && task1.getEndTime().isAfter(task2.getStartTime());
+    }
+
+    private void addPrioritized(Task task) {
+        for (Task tasking : prioritizedTasks) {
+            if (isOverlapping(tasking, task)) {
+                throw new IllegalArgumentException(task + " Пересекается по времени выполнения с "
+                        + tasking);
+            }
+        }
+        prioritizedTasks.add(task);
     }
 
     @Override
@@ -113,96 +171,6 @@ public class InMemoryTaskManager implements TaskManager {
         return new ArrayList<>(prioritizedTasks);
     }
 
-    private boolean isOverlapping(Task task1, Task task2) {
-        return task1.getStartTime().isBefore(task2.getEndTime()) && task1.getEndTime().isAfter(task2.getStartTime());
-    }
-
-    @Override
-    public int pushTask(Task task) {
-        task.setId(id++);
-        try {
-            for (Task tasking : prioritizedTasks) {
-                if (isOverlapping(tasking, task)) {
-                    throw new IllegalArgumentException(task + " Пересекается по времени выполнения с " + tasking);
-                }
-            }
-        } catch (IllegalArgumentException e) {
-            // Логируем ошибку для отладки
-            System.err.println(e.getMessage());
-            throw e; // прокидаем исключение дальше
-        }
-
-        taskMaster.put(task.getId(), task);
-        prioritizedTasks.add(task);
-        return task.getId();
-    }
-
-
-    @Override
-    public int pushEpic(Epic epic) {
-        epic.setId(id++);
-        taskMaster.put(epic.getId(), epic);
-        return epic.getId();
-    }
-    @Override
-    public boolean addSubToEpic(Epic epic, Subtask sub) {
-        if (!epic.getSubMap().containsKey(sub.getId())) {
-
-            epic.getSubMap().put(sub.getId(), sub);
-            if (epic.getSubMapSize() == 1) epic.setStartTime(sub.getStartTime());
-
-            sub.setMotherId(epic);
-            changeStatusEpic(epic);
-            return epic.getSubMap().containsKey(sub.getId());
-        }
-        return false;
-    }
-
-    @Override
-    public int pushSub(Subtask sub) {
-        sub.setId(id++);
-
-        try {
-            for (Task tasking : prioritizedTasks) {
-                if (isOverlapping(tasking, sub)) {
-                    throw new IllegalArgumentException(sub + " Пересекается по времени выполнения с " + tasking);
-                }
-            }
-        } catch (IllegalArgumentException e) {
-            // Логируем ошибку для отладки
-            System.err.println(e.getMessage());
-            throw e; // прокидаем исключение дальше
-        }
-
-        if (sub.getStartTime() != null) {
-            taskMaster.put(sub.getId(), sub);
-            prioritizedTasks.add(sub);
-        }
-        return sub.getId();
-    }
-
-    @Override
-    public void updateTask(Task task) {
-        if (task != null) {
-            try {
-                for (Task tasking : prioritizedTasks) {
-                    if (isOverlapping(tasking, task)) {
-                        throw new IllegalArgumentException(task + " Пересекается по времени выполнения с " + tasking);
-                    }
-                }
-            } catch (IllegalArgumentException e) {
-                // Логируем ошибку для отладки
-                System.err.println(e.getMessage());
-                throw e; // прокидаем исключение дальше
-            }
-            if (task.getStartTime() != null) {
-                taskMaster.put(task.getId(), task);
-                prioritizedTasks.removeIf(t -> t.getId() == task.getId());
-                prioritizedTasks.add(task);
-            }
-
-        }
-    }
 
     @Override
     public Task serchTask(int searchingId) {
@@ -239,7 +207,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void changeStatusSub(Status status, Subtask sub) {
         sub.setStatus(status);
-        changeStatusEpic((Epic) serchTask(sub.getMotherId())); // Нужно ли в самом эпике менять статус или это один итот же объект?
+        updateEpicParam((Epic) serchTask(sub.getMotherId())); // Нужно ли в самом эпике менять статус или это один итот же объект?
 
         if (status == Status.DONE) {
             sub.setDuration();
@@ -256,7 +224,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void changeStatusEpic(Epic epic) {
+    public void updateEpicParam(Epic epic) {
         boolean setNew = true;
         boolean setDone = true;
         Duration duration = Duration.ZERO;
@@ -268,11 +236,12 @@ public class InMemoryTaskManager implements TaskManager {
             if (sub.getStatus() != Status.DONE) {
                 setDone = false;
             }
+            if (sub.getDuration() != Duration.ZERO) duration = duration.plus(sub.getDuration());
         }
 
         if (setDone) {
             epic.setStatus(Status.DONE);
-            epic.setEndTime(epic.getSubtask(epic.getSubMapSize()));
+            epic.setDuration(duration);
         } else if (setNew) {
             epic.setStatus(Status.NEW);
         } else {

@@ -15,12 +15,12 @@ public class Task {
     private LocalDateTime startTime;
     private Duration duration;
 
-    public Task(String title, String description) {
+    public Task(String title, String description, long duration, LocalDateTime startTime) {
         this.title = title;
         this.description = description;
         this.status = Status.NEW;
-        setStartTime();
-        this.duration = Duration.ZERO;
+        this.startTime = startTime;
+        this.duration = Duration.ofMinutes(duration);
     }
 
     public LocalDateTime getEndTime() {
@@ -95,7 +95,7 @@ public class Task {
     @Override
     public String toString() {
         return this.getId() + "," + this.getTitle() + "," + this.getTaskClass() + "," + this.getStatus() + ","
-                + this.getDescription() + "," + this.getStartTime() + "," + this.getDuration().toMinutes();
+                + this.getDescription() + "," + this.getDuration().toMinutes() + "," + this.getStartTime();
     }
 
     @Override
