@@ -2,8 +2,9 @@ package controllers;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 import classes.enums.Class;
 import classes.enums.Status;
@@ -25,6 +26,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     @Override
     public int pushSub(Subtask subtask) throws ManagerSaveException {
         int id = super.pushSub(subtask);
+        save();
+        return id;
+    }
+
+    @Override
+    public int pushEpic(Epic epic) throws ManagerSaveException {
+        int id = super.pushEpic(epic);
         save();
         return id;
     }
@@ -68,9 +76,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
 
         // Запись новых задач в файл
-        try (BufferedWriter fileWriter = new BufferedWriter(new FileWriter(filePath, StandardCharsets.UTF_8, false))) {
+        try (BufferedWriter fileWriter = new BufferedWriter(new FileWriter(filePath, StandardCharsets.UTF_8, true))) {
             for (Task task : taskMaster.values()) {
-                fileWriter.write(task.toString() + "\n");
+                if (!savedTasks.contains(task)) {
+                    fileWriter.write(task.toString() + "\n");
+                }
             }
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка записи в файл " + filePath);
@@ -78,10 +88,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     private void loadFromFile(String filePath) {
+        Epic currentEpic = null;
         try (BufferedReader br = new BufferedReader(new FileReader(filePath, StandardCharsets.UTF_8))) {
-            Epic currentEpic = null;
             String line;
-
             while ((line = br.readLine()) != null) {
                 if (!line.trim().isEmpty()) {
                     Task task = fromString(line);
@@ -93,6 +102,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                                 throw new ManagerSaveException("Задачи не сохранились");
                             }
 
+
                             if (task.getTaskClass() == Class.EPIC) {
                                 currentEpic = (Epic) task;
                             } else if (task.getTaskClass() == Class.SUBTASK) {
@@ -102,6 +112,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                                 }
                             }
                             setManagerId(task.getId());
+                            task = null;
                         }
                     }
                 }
@@ -124,7 +135,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         Status status = Status.valueOf(param[3]);
         String description = param[4];
         long duration = Long.parseLong(param[5]);
-        LocalDateTime startTime = "null".equals(param[6]) ? null : LocalDateTime.parse(param[6]);
+        LocalDateTime startTime;
+
+        if (!param[6].equals("null")){
+            startTime = LocalDateTime.parse(param[6]);
+        } else {
+            startTime = LocalDateTime.MIN;
+        }
 
         Task task;
         switch (taskClass) {
@@ -135,13 +152,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 task = new Epic(title, description);
                 break;
             case SUBTASK:
-                task = new Subtask(title, description, duration, startTime);
+                task = new Subtask(title, description, duration,startTime);
                 break;
             default:
                 throw new IllegalArgumentException("Неизвестный тип задачи: " + taskClass);
         }
+
         task.setId(id);
         task.setStatus(status);
+
         return task;
     }
 
