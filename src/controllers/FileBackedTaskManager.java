@@ -2,11 +2,14 @@ package controllers;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-import classes.*;
 import classes.enums.Class;
 import classes.enums.Status;
+import classes.tasks.Epic;
+import classes.tasks.Subtask;
+import classes.tasks.Task;
 import exeptions.ManagerSaveException;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
@@ -15,13 +18,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     public FileBackedTaskManager(String filePath) {
         super();
-        this.filePath = filePath; //Пока временный вариант, нужно через параметр
+        this.filePath = filePath;
         loadFromFile(filePath);
     }
 
     @Override
-    public int pushSub(Epic epic, Subtask subtask) throws ManagerSaveException {
-        int id = super.pushSub(epic, subtask);
+    public int pushSub(Subtask subtask) throws ManagerSaveException {
+        int id = super.pushSub(subtask);
         save();
         return id;
     }
@@ -84,11 +87,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     private void loadFromFile(String filePath) {
-        Epic currentEpic = null; // Сброс текущего эпика перед началом чтения файла
+        Epic currentEpic = null;
         try (BufferedReader br = new BufferedReader(new FileReader(filePath, StandardCharsets.UTF_8))) {
             String line;
             while ((line = br.readLine()) != null) {
-                if (!line.trim().isEmpty()) { // Проверка на пустоту строки
+                if (!line.trim().isEmpty()) {
                     Task task = fromString(line);
                     if (task != null) {
                         if (!taskMaster.containsKey(task.getId())) {
@@ -98,9 +101,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                                 throw new ManagerSaveException("Задачи не сохранились");
                             }
 
+
                             if (task.getTaskClass() == Class.EPIC) {
                                 currentEpic = (Epic) task;
-
                             } else if (task.getTaskClass() == Class.SUBTASK) {
                                 if (currentEpic != null) {
                                     currentEpic.getSubMap().put(task.getId(), (Subtask) task);
@@ -113,7 +116,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     }
                 }
             }
-
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка чтения файла " + filePath);
         }
@@ -122,7 +124,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     public Task fromString(String line) {
         String[] param = line.split(",");
 
-        if (param.length != 5) {
+        if (param.length != 7) {
             throw new IllegalArgumentException("Неверный формат строки: " + line);
         }
 
@@ -131,17 +133,25 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         Class taskClass = Class.valueOf(param[2]);
         Status status = Status.valueOf(param[3]);
         String description = param[4];
+        long duration = Long.parseLong(param[5]);
+        LocalDateTime startTime;
+
+        if (!param[6].equals("null")) {
+            startTime = LocalDateTime.parse(param[6]);
+        } else {
+            startTime = LocalDateTime.MIN;
+        }
 
         Task task;
         switch (taskClass) {
             case TASK:
-                task = new Task(title, description);
+                task = new Task(title, description, duration, startTime);
                 break;
             case EPIC:
                 task = new Epic(title, description);
                 break;
             case SUBTASK:
-                task = new Subtask(title, description);
+                task = new Subtask(title, description, duration,startTime);
                 break;
             default:
                 throw new IllegalArgumentException("Неизвестный тип задачи: " + taskClass);

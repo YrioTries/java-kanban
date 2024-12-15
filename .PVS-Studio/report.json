@@ -1,0 +1,53 @@
+{
+  "version": 2,
+  "warnings": [
+    {
+      "code": "Update",
+      "cwe": 0,
+      "level": 1,
+      "positions": [
+        {
+          "file": "",
+          "line": 1,
+          "endLine": 1,
+          "column": 1,
+          "endColumn": 1,
+          "navigation": {
+            "previousLine": 0,
+            "currentLine": 0,
+            "nextLine": 0,
+            "columns": 0
+          }
+        }
+      ],
+      "message": "A newer version of PVS-Studio is available (7.34.87460)",
+      "projects": [],
+      "favorite": false,
+      "falseAlarm": false
+    },
+    {
+      "code": "V009",
+      "cwe": 0,
+      "level": 0,
+      "positions": [
+        {
+          "file": "C:\\Users\\Maccelway\\IdeaProjects\\java-kanban\\test\\controllers\\FileBackedTaskManagerTest.java",
+          "line": 1,
+          "endLine": 1,
+          "column": 1,
+          "endColumn": 1,
+          "navigation": {
+            "previousLine": 0,
+            "currentLine": 0,
+            "nextLine": 0,
+            "columns": 0
+          }
+        }
+      ],
+      "message": "To use free version of PVS-Studio, source code files are required to start with a special comment.",
+      "projects": [],
+      "favorite": false,
+      "falseAlarm": false
+    }
+  ]
+}

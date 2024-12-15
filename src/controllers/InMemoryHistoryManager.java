@@ -1,6 +1,6 @@
 package controllers;
 
-import classes.Task;
+import classes.tasks.Task;
 import classes.HandleLinkedHashMap;
 import controllers.interfaces.HistoryManager;
 

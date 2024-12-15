@@ -1,9 +1,9 @@
 package controllers.interfaces;
 
-import classes.Epic;
+import classes.tasks.Epic;
 import classes.enums.Status;
-import classes.Subtask;
-import classes.Task;
+import classes.tasks.Subtask;
+import classes.tasks.Task;
 
 import java.util.ArrayList;
 
@@ -21,7 +21,7 @@ public interface TaskManager {
 
     void changeStatusTask(Status status, Task task);
 
-    void changeStatusEpic(Epic epic);
+    void updateEpicParam(Epic epic);
 
     void updateTask(Task task);
 
@@ -29,11 +29,11 @@ public interface TaskManager {
 
     int pushEpic(Epic epic);
 
-    int pushSub(Epic epic, Subtask sub);
+    int pushSub(Subtask sub);
+
+    boolean addSubToEpic(Epic epic, Subtask sub);
 
     Task serchTask(int searchingId);
 
     ArrayList<Task> getTaskList();
-
-    Integer getMotherID(Integer id);
 }

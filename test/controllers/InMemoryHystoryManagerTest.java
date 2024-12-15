@@ -1,13 +1,13 @@
 package controllers;
 
-import classes.Epic;
-import classes.Subtask;
-import classes.Task;
-import org.junit.jupiter.api.BeforeAll;
+import classes.tasks.Epic;
+import classes.tasks.Subtask;
+import classes.tasks.Task;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -18,24 +18,29 @@ public class InMemoryHystoryManagerTest {
     static InMemoryTaskManager test;
 
     Epic epic1 = new Epic("1.Эпик", "простой");
-    Subtask sub1 = new Subtask("1.1.Подзадача", "средняя");
-    Subtask sub2 = new Subtask("1.2.Подзадача", "тяжелее");
+    Subtask sub1 = new Subtask("1.1.Подзадача", "средняя", 15, LocalDateTime.now());
+    Subtask sub2 = new Subtask("1.2.Подзадача", "тяжелее", 15, sub1.getEndTime());
 
-    static Epic epic2 = new Epic("2.Эпик", "простой");
-    Subtask sub3 = new Subtask("2.1.Подзадача", "норм");
+    Epic epic2 = new Epic("2.Эпик", "простой");
+    Subtask sub3 = new Subtask("2.1.Подзадача", "норм", 15, sub2.getEndTime());
 
-    Task task1 = new Task("1.Задание", "сложноватое");
-    Task task2 = new Task("2.Задание", "сложноватое");
+    Task task1 = new Task("1.Задание", "сложноватое", 15, sub3.getEndTime());
+    Task task2 = new Task("2.Задание", "сложноватое", 15, task1.getEndTime());
 
     @BeforeEach
     public void pushTasks() throws IOException {
         test = new InMemoryTaskManager();
 
         test.pushEpic(epic1);
-        test.pushSub(epic1, sub1);
-        test.pushSub(epic1, sub2);
+        test.pushSub(sub1);
+        test.pushSub(sub2);
+        test.addSubToEpic(epic1,sub1);
+        test.addSubToEpic(epic1,sub2);
+
         test.pushEpic(epic2);
-        test.pushSub(epic2, sub3);
+        test.pushSub(sub3);
+        test.addSubToEpic(epic2, sub3);
+
         test.pushTask(task1);
         test.pushTask(task2);
     }
