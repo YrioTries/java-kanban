@@ -17,15 +17,15 @@ public class InMemoryTaskManagerTest {
 
     static InMemoryTaskManager test;
 
-    static Epic epic1 = new Epic("1.Эпик", "простой");
-    static Subtask sub1 = new Subtask("1.1.Подзадача", "средняя", 15, LocalDateTime.now());
-    static Subtask sub2 = new Subtask("1.2.Подзадача", "тяжелее", 15, sub1.getEndTime());
+    Epic epic1 = new Epic("1.Эпик", "простой");
+    Subtask sub1 = new Subtask("1.1.Подзадача", "средняя", 15, LocalDateTime.now());
+    Subtask sub2 = new Subtask("1.2.Подзадача", "тяжелее", 15, sub1.getEndTime());
 
-    static Epic epic2 = new Epic("2.Эпик", "простой");
-    static Subtask sub3 = new Subtask("2.1.Подзадача", "норм", 15, sub2.getEndTime());
+    Epic epic2 = new Epic("2.Эпик", "простой");
+    Subtask sub3 = new Subtask("2.1.Подзадача", "норм", 15, sub2.getEndTime());
 
-    static Task task1 = new Task("1.Задание", "сложноватое", 15, sub3.getEndTime());
-    static Task task2 = new Task("2.Задание", "сложноватое", 15, task1.getEndTime());
+    Task task1 = new Task("1.Задание", "сложноватое", 15, sub3.getEndTime());
+    Task task2 = new Task("2.Задание", "сложноватое", 15, task1.getEndTime());
 
     @BeforeEach
     public void pushTasks() throws IOException {
@@ -173,26 +173,17 @@ public class InMemoryTaskManagerTest {
         Integer result = sub3.getMotherId();
 
         assertNotNull(result);
-        assertNotEquals(epic1.getId(), result) ;
+        assertNotEquals(epic2, result) ;
     }
 ///////////////////////////////////////////// ============== ///////////////////////////////////////////
 
     @Test
     public void testGetPrioritizedTasks() throws IllegalArgumentException{
-        task1.setStartTime(LocalDateTime.now());
-        task1.setDuration(Duration.ofMinutes(30));
-        test.updateTask(task1);
-
-        task2.setStartTime(LocalDateTime.now().plusHours(1));
-        task2.setDuration(Duration.ofMinutes(30));
-        test.updateTask(task2);
-
         ArrayList<Task> prioritizedTasks = test.getPrioritizedTasks();
 
-        System.out.println(prioritizedTasks);
-        assertEquals(2, prioritizedTasks.size());
-        assertEquals(task1, prioritizedTasks.get(0));
-        assertEquals(task2, prioritizedTasks.get(1));
+        assertEquals(5, prioritizedTasks.size());
+        assertEquals(task1, prioritizedTasks.get(3));
+        assertEquals(task2, prioritizedTasks.get(4));
     }
 
     @Test

@@ -2,9 +2,7 @@ package controllers;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.time.DateTimeException;
 import java.util.ArrayList;
-import java.time.Duration;
 import java.time.LocalDateTime;
 
 import classes.enums.Class;
@@ -70,11 +68,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
 
         // Запись новых задач в файл
-        try (BufferedWriter fileWriter = new BufferedWriter(new FileWriter(filePath, StandardCharsets.UTF_8, true))) {
+        try (BufferedWriter fileWriter = new BufferedWriter(new FileWriter(filePath, StandardCharsets.UTF_8, false))) {
             for (Task task : taskMaster.values()) {
-                if (!savedTasks.contains(task)) {
-                    fileWriter.write(task.toString() + "\n");
-                }
+                fileWriter.write(task.toString() + "\n");
             }
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка записи в файл " + filePath);
@@ -99,7 +95,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
                             if (task.getTaskClass() == Class.EPIC) {
                                 currentEpic = (Epic) task;
-
                             } else if (task.getTaskClass() == Class.SUBTASK) {
                                 if (currentEpic != null) {
                                     currentEpic.getSubMap().put(task.getId(), (Subtask) task);
@@ -129,7 +124,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         Status status = Status.valueOf(param[3]);
         String description = param[4];
         long duration = Long.parseLong(param[5]);
-        LocalDateTime startTime = LocalDateTime.parse(param[6]);
+        LocalDateTime startTime = "null".equals(param[6]) ? null : LocalDateTime.parse(param[6]);
 
         Task task;
         switch (taskClass) {
@@ -145,6 +140,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             default:
                 throw new IllegalArgumentException("Неизвестный тип задачи: " + taskClass);
         }
+        task.setId(id);
+        task.setStatus(status);
         return task;
     }
 

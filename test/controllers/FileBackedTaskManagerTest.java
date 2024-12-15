@@ -13,7 +13,6 @@ public class FileBackedTaskManagerTest {
     static InMemoryTaskManager test = new FileBackedTaskManager("base.csv");
 
     public static void main(String[] args) throws IOException, ManagerSaveException {
-
         if (FileBackedTaskManager.isCsvFileEmpty("base.csv")) {
             Epic epic1 = new Epic("1.Эпик", "простой");
             Subtask sub1 = new Subtask("1.1.Подзадача", "средняя", 15, LocalDateTime.now());
@@ -37,11 +36,11 @@ public class FileBackedTaskManagerTest {
 
             test.pushTask(task1);
             test.pushTask(task2);
-
         }
-            System.out.println(test.serchTask(0));
 
-        Task task3 = new Task("3.Задание", "добавленное третье", 15, test.serchTask(7).getEndTime());
+        System.out.println(test.serchTask(0));
+
+        Task task3 = new Task("3.Задание", "добавленное третье", 15, test.serchTask(6).getEndTime());
         test.pushTask(task3);
 
         Task task4 = new Task("4.Задание", "уже четвертое!", 15, task3.getEndTime());

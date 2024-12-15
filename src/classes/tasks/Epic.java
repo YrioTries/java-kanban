@@ -13,7 +13,7 @@ public class Epic extends Task {
     private LocalDateTime endTime;
 
     public Epic(String title, String description) {
-        super(title, description, 0, null);
+        super(title, description, 0, LocalDateTime.MIN);
         epicSubtasks = new HashMap<>();
         endTime = null;
     }
@@ -32,7 +32,9 @@ public class Epic extends Task {
     }
 
     public void addSubtask(Subtask subtask) {
-        epicSubtasks.put(subtask.getId(), subtask);
+        if (subtask != null) {
+            epicSubtasks.put(subtask.getId(), subtask);
+        }
     }
 
     public void removeSubtask(int subtaskId) {

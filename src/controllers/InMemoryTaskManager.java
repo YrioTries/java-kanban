@@ -46,7 +46,6 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public int pushTask(Task task) {
         task.setId(id++);
-
         taskMaster.put(task.getId(), task);
         addPrioritized(task);
         return task.getId();
@@ -62,14 +61,14 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public int pushSub(Subtask sub) {
         sub.setId(id++);
-
         taskMaster.put(sub.getId(), sub);
         addPrioritized(sub);
         return sub.getId();
     }
+
     @Override
     public boolean addSubToEpic(Epic epic, Subtask sub) {
-        if (!epic.getSubMap().containsKey(sub.getId())) {
+        if (epic != null && sub != null && !epic.getSubMap().containsKey(sub.getId())) {
             if (epic.getSubMap().isEmpty()) epic.setStartTime(sub.getStartTime());
             epic.getSubMap().put(sub.getId(), sub);
             sub.setMotherId(epic);
@@ -89,42 +88,45 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     private boolean isOverlapping(Task task1, Task task2) {
-        return task1.getStartTime().isBefore(task2.getEndTime()) && task1.getEndTime().isAfter(task2.getStartTime());
+        return task1.getStartTime() != null && task2.getStartTime() != null &&
+                task1.getStartTime().isBefore(task2.getEndTime()) && task1.getEndTime().isAfter(task2.getStartTime());
     }
 
     private void addPrioritized(Task task) {
-        for (Task tasking : prioritizedTasks) {
-            if (isOverlapping(tasking, task)) {
-                throw new IllegalArgumentException(task + " Пересекается по времени выполнения с "
-                        + tasking);
+        if (task != null) {
+            for (Task tasking : prioritizedTasks) {
+                if (isOverlapping(tasking, task)) {
+                    throw new IllegalArgumentException(task + " Пересекается по времени выполнения с " + tasking);
+                }
             }
+            prioritizedTasks.add(task);
         }
-        prioritizedTasks.add(task);
     }
 
     @Override
     public void delete(Integer id) {
         if (taskMaster.containsKey(id)) {
-            if (taskMaster.get(id).getTaskClass() == Class.SUBTASK) {
-                Subtask sub = (Subtask) taskMaster.get(id);
-                int mId = sub.getMotherId();
-                Epic epic = (Epic) serchTask(mId);
-                epic.getSubMap().remove(sub.getId());
-                sub = null;
-                epic = null;
-
-            } else if (taskMaster.get(id).getTaskClass() == Class.EPIC) { // Удаление сабов при удалении эпиков
-                Epic epic = (Epic) taskMaster.get(id);
-
-                for (Integer subId : epic.getSubMap().keySet()) {
-                    prioritizedTasks.remove(taskMaster.get(subId));
-                    historyManager.remove(subId);
-                    taskMaster.remove(subId);
+            Task task = taskMaster.get(id);
+            if (task != null) {
+                if (task.getTaskClass() == Class.SUBTASK) {
+                    Subtask sub = (Subtask) task;
+                    int mId = sub.getMotherId();
+                    Epic epic = (Epic) serchTask(mId);
+                    if (epic != null) {
+                        epic.getSubMap().remove(sub.getId());
+                    }
+                } else if (task.getTaskClass() == Class.EPIC) {
+                    Epic epic = (Epic) task;
+                    for (Integer subId : epic.getSubMap().keySet()) {
+                        prioritizedTasks.remove(taskMaster.get(subId));
+                        historyManager.remove(subId);
+                        taskMaster.remove(subId);
+                    }
                 }
+                if (task.getTaskClass() != Class.EPIC) prioritizedTasks.remove(task);
+                historyManager.remove(id);
+                taskMaster.remove(id);
             }
-            if (taskMaster.get(id).getTaskClass() != Class.EPIC) prioritizedTasks.remove(taskMaster.get(id));
-            historyManager.remove(id);
-            taskMaster.remove(id);
         }
     }
 
@@ -137,15 +139,13 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     public void deleteEpic(int id) {
-        if (taskMaster.containsKey(id) && taskMaster.get(id).getTaskClass() == Class.TASK) {
+        if (taskMaster.containsKey(id) && taskMaster.get(id).getTaskClass() == Class.EPIC) {
             Epic epic = (Epic) taskMaster.get(id);
-
             for (Integer subId : epic.getSubMap().keySet()) {
                 prioritizedTasks.remove(taskMaster.get(subId));
                 historyManager.remove(subId);
                 taskMaster.remove(subId);
             }
-
             historyManager.remove(id);
             taskMaster.remove(id);
         }
@@ -156,21 +156,18 @@ public class InMemoryTaskManager implements TaskManager {
             Subtask sub = (Subtask) taskMaster.get(id);
             int mId = sub.getMotherId();
             Epic epic = (Epic) serchTask(mId);
-            epic.getSubMap().remove(sub.getId());
-
+            if (epic != null) {
+                epic.getSubMap().remove(sub.getId());
+            }
             prioritizedTasks.remove(sub);
             historyManager.remove(id);
             taskMaster.remove(id);
-
-            sub = null;
-            epic = null;
         }
     }
 
     public ArrayList<Task> getPrioritizedTasks() {
         return new ArrayList<>(prioritizedTasks);
     }
-
 
     @Override
     public Task serchTask(int searchingId) {
@@ -200,52 +197,56 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public ArrayList<Task> getTaskList() {
         return taskMaster.values().stream()
-                .filter(task ->  Class.TASK.equals(task.getTaskClass()))
+                .filter(task -> Class.TASK.equals(task.getTaskClass()))
                 .collect(Collectors.toCollection(ArrayList::new));
     }
 
     @Override
     public void changeStatusSub(Status status, Subtask sub) {
-        sub.setStatus(status);
-        updateEpicParam((Epic) serchTask(sub.getMotherId())); // Нужно ли в самом эпике менять статус или это один итот же объект?
-
-        if (status == Status.DONE) {
-            sub.setDuration();
+        if (sub != null) {
+            sub.setStatus(status);
+            updateEpicParam((Epic) serchTask(sub.getMotherId()));
+            if (status == Status.DONE) {
+                sub.setDuration();
+            }
         }
     }
 
     @Override
     public void changeStatusTask(Status status, Task task) {
-        task.setStatus(status);
-
-        if (status == Status.DONE) {
-            task.setDuration();
+        if (task != null) {
+            task.setStatus(status);
+            if (status == Status.DONE) {
+                task.setDuration();
+            }
         }
     }
 
     @Override
     public void updateEpicParam(Epic epic) {
-        boolean setNew = true;
-        boolean setDone = true;
-        Duration duration = Duration.ZERO;
+        if (epic != null) {
+            boolean setNew = true;
+            boolean setDone = true;
+            Duration duration = Duration.ZERO;
 
-        for (Subtask sub : epic.getSubMap().values()) {
-            if (sub.getStatus() != Status.NEW) {
-                setNew = false;
+            for (Subtask sub : epic.getSubMap().values()) {
+                if (sub.getStatus() != Status.NEW) {
+                    setNew = false;
+                }
+                if (sub.getStatus() != Status.DONE) {
+                    setDone = false;
+                }
+                if (sub.getDuration() != Duration.ZERO) duration = duration.plus(sub.getDuration());
             }
-            if (sub.getStatus() != Status.DONE) {
-                setDone = false;
-            }
-            if (sub.getDuration() != Duration.ZERO) duration = duration.plus(sub.getDuration());
-        }
 
-        if (setDone) {
-            epic.setStatus(Status.DONE);
-            epic.setDuration(duration);
-        } else if (setNew) {
-            epic.setStatus(Status.NEW);
-        } else {
-            epic.setStatus(Status.IN_PROGRESS);
+            if (setDone) {
+                epic.setStatus(Status.DONE);
+                epic.setDuration(duration);
+            } else if (setNew) {
+                epic.setStatus(Status.NEW);
+            } else {
+                epic.setStatus(Status.IN_PROGRESS);
+            }
         }
     }
 }

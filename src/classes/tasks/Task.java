@@ -75,7 +75,7 @@ public class Task {
     }
 
     protected void setStartTime() {
-        if (this.getTaskClass() != Class.EPIC){
+        if (this.getTaskClass() != Class.EPIC && this.startTime == null) {
             this.startTime = LocalDateTime.now();
         }
     }
@@ -89,7 +89,9 @@ public class Task {
     }
 
     public void setDuration() {
-        duration = Duration.between(startTime, LocalDateTime.now());
+        if (this.startTime != null) {
+            duration = Duration.between(startTime, this.getEndTime());
+        }
     }
 
     @Override

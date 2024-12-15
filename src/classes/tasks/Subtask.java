@@ -19,7 +19,9 @@ public class Subtask extends Task {
     }
 
     public void setMotherId(Epic epic) {
-        motherId = epic.getId();
+        if (epic != null) {
+            motherId = epic.getId();
+        }
     }
 
     public int getMotherId() {
