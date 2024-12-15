@@ -7,7 +7,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.*;
@@ -173,7 +172,7 @@ public class InMemoryTaskManagerTest {
         Integer result = sub3.getMotherId();
 
         assertNotNull(result);
-        assertNotEquals(epic2, result) ;
+        assertEquals(epic2.getId(), result) ;
     }
 ///////////////////////////////////////////// ============== ///////////////////////////////////////////
 

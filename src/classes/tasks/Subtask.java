@@ -2,7 +2,6 @@ package classes.tasks;
 
 import classes.enums.Class;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class Subtask extends Task {
