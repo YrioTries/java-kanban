@@ -16,7 +16,6 @@ public class BaseHttpHandler implements HttpHandler {
         // считываем тело запроса и преобразуем в строку
         InputStream inputStream = exchange.getRequestBody();
         String body = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-        System.out.println("Тело запроса:\n" + body);
 
         Endpoint endpoint = getEndpoint(exchange.getRequestURI().getPath(), exchange.getRequestMethod());
         String response = handleRequest(exchange, endpoint, body);
@@ -34,9 +33,32 @@ public class BaseHttpHandler implements HttpHandler {
                 return handleGetTasks();
             case GET_TASKS_ID:
                 return handleGetTaskById(exchange);
+            case GET_EPICS:
+                return ;
+            case GET_EPICS_ID:
+                return;
+            case GET_EPICS_ID_SUBTUSKS:
+                return;
+            case GET_SUBTASKS:
+                return ;
+            case GET_SUBTASKS_ID:
+                return ;
+            case GET_HYSTORY:
+                return ;
+            case GET_PRIORITIZED:
+                return ;
             case POST_TASKS:
-                return handlePostTasks(body);
-            // Добавьте обработку для других эндпоинтов
+                return ;
+            case POST_EPICS:
+                return ;
+            case POST_SUBTASKS:
+                return;
+            case DELETE_TASKS_ID:
+                return ;
+            case DELETE_EPICS_ID:
+                return ;
+            case DELETE_SUBTASKS_ID:
+                return ;
             default:
                 return "Unknown endpoint";
         }

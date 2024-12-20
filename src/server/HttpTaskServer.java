@@ -13,6 +13,7 @@ public class HttpTaskServer {
     public static void main(String[] args) throws IOException {
         HttpTaskServer server = new HttpTaskServer();
         server.start();
+        server.stop();
     }
 
     public void start() throws IOException {
@@ -24,7 +25,7 @@ public class HttpTaskServer {
 
     public void stop() {
         if (httpServer != null) {
-            httpServer.stop(0);
+            httpServer.stop(160);
         }
     }
 
