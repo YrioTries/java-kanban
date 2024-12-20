@@ -151,7 +151,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    public void deleteSubtusk(int id) {
+    public void deleteSubtask(int id) {
         if (taskMaster.containsKey(id) && taskMaster.get(id).getTaskClass() == Class.SUBTASK) {
             Subtask sub = (Subtask) taskMaster.get(id);
             int mId = sub.getMotherId();

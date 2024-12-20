@@ -17,5 +17,7 @@ public enum Endpoint {
 
     DELETE_TASKS_ID,
     DELETE_EPICS_ID,
-    DELETE_SUBTASKS_ID
+    DELETE_SUBTASKS_ID,
+
+    UNKNOWN
 }
