@@ -19,5 +19,8 @@ public enum Endpoint {
     DELETE_EPICS_ID,
     DELETE_SUBTASKS_ID,
 
+    ERROR_404,
+    ERROR_406,
+
     UNKNOWN
 }

@@ -39,8 +39,14 @@ public class InMemoryTaskManager implements TaskManager {
         return (ArrayList<Task>) historyManager.getHistory();
     }
 
+    @Override
     public HashMap<Integer, Task> getTaskMaster() {
         return taskMaster;
+    }
+
+    @Override
+    public ArrayList<Task> getPrioritizedTasks() {
+        return new ArrayList<>(prioritizedTasks);
     }
 
     @Override
@@ -130,6 +136,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+    @Override
     public void deleteTask(int id) {
         if (taskMaster.containsKey(id) && taskMaster.get(id).getTaskClass() == Class.TASK) {
             prioritizedTasks.remove(taskMaster.get(id));
@@ -138,6 +145,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+    @Override
     public void deleteEpic(int id) {
         if (taskMaster.containsKey(id) && taskMaster.get(id).getTaskClass() == Class.EPIC) {
             Epic epic = (Epic) taskMaster.get(id);
@@ -151,6 +159,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+    @Override
     public void deleteSubtask(int id) {
         if (taskMaster.containsKey(id) && taskMaster.get(id).getTaskClass() == Class.SUBTASK) {
             Subtask sub = (Subtask) taskMaster.get(id);
@@ -163,10 +172,6 @@ public class InMemoryTaskManager implements TaskManager {
             historyManager.remove(id);
             taskMaster.remove(id);
         }
-    }
-
-    public ArrayList<Task> getPrioritizedTasks() {
-        return new ArrayList<>(prioritizedTasks);
     }
 
     @Override
