@@ -1,7 +1,7 @@
 package server;
 
 import com.sun.net.httpserver.HttpServer;
-import classes.enums.Endpoint;
+import server.hedlers.BaseHttpHandler;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
