@@ -1,7 +1,5 @@
 package server.handlers;
 
-import classes.enums.Endpoint;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
@@ -12,7 +10,7 @@ import controllers.interfaces.TaskManager;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public abstract class BaseHttpHandler implements HttpHandler {
+public class BaseHttpHandler implements HttpHandler {
     protected final TaskManager taskManager = new InMemoryTaskManager();
     protected final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
@@ -31,11 +29,17 @@ public abstract class BaseHttpHandler implements HttpHandler {
         };
     }
 
-    protected abstract void processGet(HttpExchange exchange, String path) throws IOException;
+    protected void processGet(HttpExchange exchange, String path) throws IOException {
+        handleBadRequest(exchange, "Not override method GET");
+    }
 
-    protected abstract void processPost(HttpExchange exchange, String path) throws IOException;
+    protected void processPost(HttpExchange exchange, String path) throws IOException {
+        handleBadRequest(exchange, "Not override method POST");
+    }
 
-    protected abstract void processDelete(HttpExchange exchange, String path) throws IOException;
+    protected void processDelete(HttpExchange exchange, String path) throws IOException {
+        handleBadRequest(exchange, "Not override method DELETE");
+    }
 
     protected void sendResponse(HttpExchange exchange, String response) throws IOException {
         exchange.getResponseHeaders().add("Content-Type", "application/json;charset=utf-8");
