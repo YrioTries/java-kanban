@@ -1,7 +1,8 @@
 package server;
 
+import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
-import server.hedlers.BaseHttpHandler;
+import server.handlers.*;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -9,15 +10,15 @@ import java.net.InetSocketAddress;
 public class HttpTaskServer {
     private static HttpServer httpServer;
 
-    public static void main(String[] args, TaskService taskService, int port) throws IOException {
+    public static void main(String[] args, HttpExchange exchange, int port) throws IOException {
         httpServer = HttpServer.create();
         httpServer.bind(new InetSocketAddress(port), 0);
 
-        httpServer.createContext("/tasks", new TasksHandler(taskService));
-        httpServer.createContext("/epics", new EpicsHandler(taskService));
-        httpServer.createContext("/subtask", new SubtasksHandler(taskService));
-        httpServer.createContext("/history", new HistoryHandler(taskService));
-        httpServer.createContext("/prioritized", new PrioritizedHandler(taskService));
+        httpServer.createContext("/tasks", new TasksHandler(exchange));
+        httpServer.createContext("/epics", new EpicsHandler(exchange));
+        httpServer.createContext("/subtask", new SubtasksHandler(exchange));
+        httpServer.createContext("/history", new HistoryHandler(exchange));
+        httpServer.createContext("/prioritized", new PrioritizedHandler(exchange));
 
         httpServer.start();
 
