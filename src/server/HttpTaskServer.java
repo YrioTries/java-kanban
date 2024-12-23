@@ -7,34 +7,24 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 
 public class HttpTaskServer {
-    private static final int PORT = 8080;
-    private HttpServer httpServer;
+    private static HttpServer httpServer;
 
-    public void start() throws IOException {
-        httpServer = HttpServer.create(new InetSocketAddress(PORT), 0);
-        configureEndpoints();
+    public static void main(String[] args, TaskService taskService, int port) throws IOException {
+        httpServer = HttpServer.create();
+        httpServer.bind(new InetSocketAddress(port), 0);
+
+        httpServer.createContext("/tasks", new TasksHandler(taskService));
+        httpServer.createContext("/epics", new EpicsHandler(taskService));
+        httpServer.createContext("/subtask", new SubtasksHandler(taskService));
+        httpServer.createContext("/history", new HistoryHandler(taskService));
+        httpServer.createContext("/prioritized", new PrioritizedHandler(taskService));
+
         httpServer.start();
-        System.out.println("Server started on port " + PORT);
+
+        System.out.println("Starting server on port " + port);
     }
 
-    public void stop() {
-        if (httpServer != null) {
-            httpServer.stop(160);
-        }
-    }
-
-    private void configureEndpoints() {
-        httpServer.createContext("/tasks", new BaseHttpHandler());
-        httpServer.createContext("/epics", new BaseHttpHandler());
-        httpServer.createContext("/subtasks", new BaseHttpHandler());
-        httpServer.createContext("/history", new BaseHttpHandler());
-        httpServer.createContext("/prioritized", new BaseHttpHandler());
-    }
-
-
-    public static void main(String[] args) throws IOException {
-        HttpTaskServer server = new HttpTaskServer();
-        server.start();
-        server.stop();
+    public static void stop() {
+        httpServer.stop(0);
     }
 }

@@ -2,6 +2,8 @@ package server.hedlers;
 
 import classes.enums.Endpoint;
 import classes.tasks.Epic;
+import classes.tasks.Subtask;
+import classes.tasks.Task;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
@@ -20,202 +22,322 @@ public class BaseHttpHandler implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        InputStream inputStream = exchange.getRequestBody();
-        String body = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+        String path = exchange.getRequestURI().getPath();
 
-        Endpoint endpoint = getEndpoint(exchange.getRequestURI().getPath(), exchange.getRequestMethod());
-        String response = handleRequest(exchange, endpoint, body);
-
-        sendResponse(exchange, response);
+        //Endpoint endpoint = getEndpoint(path, exchange.getRequestMethod());
+        Endpoint endpoint = getEndpoint(path, exchange.getRequestMethod());
+        handleRequest(exchange, path, endpoint);
     }
 
-    protected String handleRequest(HttpExchange exchange, Endpoint endpoint, String body) throws IOException {
-        return switch (endpoint) {
-            case GET_TASKS -> handleGetTasks(exchange);
-            case GET_EPICS -> handleGetEpics(exchange);
-            case GET_SUBTASKS -> handleGetSubtasks(exchange);
-            case GET_TASKS_ID, GET_EPICS_ID, GET_SUBTASKS_ID -> handleGetTaskById(exchange);
-            case GET_EPICS_ID_SUBTUSKS -> handleGetEpicsSubsById(exchange);
-            case GET_HYSTORY -> gson.toJson(taskManager.getHistory());
-            case GET_PRIORITIZED -> gson.toJson(taskManager.getPrioritizedTasks());
-            case POST_TASKS -> handlePostTask(exchange, body);
-            case POST_EPICS -> handlePostEpic(exchange, body);
-            case POST_SUBTASKS -> handlePostSubtask(exchange, body);
-            case DELETE_TASKS_ID -> handleDelTaskById(exchange);
-            case DELETE_EPICS_ID -> handleDelEpicById(exchange);
-            case DELETE_SUBTASKS_ID -> handleDelSubById(exchange);
-            default -> "Unknown endpoint";
+    protected Endpoint getEndpoint(String path, String requestMethod) {
+
+        return switch (requestMethod) {
+            case "GET" -> Endpoint.GET;
+            case "POST" -> Endpoint.POST;
+            case "DELETE" -> Endpoint.DELETE;
+            default -> Endpoint.UNKNOWN;
         };
     }
 
+    protected void handleRequest(HttpExchange exchange, String path, Endpoint endpoint) throws IOException {
+        switch (endpoint) {
+            case GET -> processGet(exchange, path);
+            case POST -> processPost(exchange, path);
+            case DELETE -> processDelete(exchange, path);
+            default -> handleNotFound(exchange);
+        }
+    }
+
+    protected void processGet(HttpExchange exchange, String path) throws IOException {
+        String[] move = path.split("/");
+        String response = "Not Found";
+
+        switch (move[1]) {
+            case "task" -> {
+                if (move.length == 2) response = handleGetTasks(exchange);
+                if (move.length == 3) response = handleGetTaskById(exchange);
+            }
+
+            case "epics" -> {
+                if (move.length == 2) response = handleGetEpics(exchange);
+                if (move.length == 3) response = handleGetTaskById(exchange);
+                if (move.length == 4 && move[3].equals("subtasks")) response = handleGetEpicsSubsById(exchange);
+            }
+
+            case "subtasks" -> {
+                if (move.length == 2) response = handleGetSubtasks(exchange);
+                if (move.length == 3) response = handleGetTaskById(exchange);
+            }
+
+            case "history" -> {
+                response = handleGetHistory(exchange);
+            }
+
+            case "prioritized" -> {
+                response = handleGetPrioritized(exchange);
+            }
+
+            default -> {
+                handleBadRequest(exchange, response);
+            }
+        }
+        try (OutputStream os = exchange.getResponseBody()) {
+            os.write(response.getBytes());
+        }
+    }
+
+    protected void processPost(HttpExchange exchange, String path) throws IOException {
+        String[] move = path.split("/");
+        String response = "Not Found";
+
+        switch (move[1]) {
+            case "task" -> {
+                if (move.length == 2) response = handlePostTask(exchange);
+            }
+
+            case "epics" -> {
+                if (move.length == 2) response = handlePostEpic(exchange);
+            }
+
+            case "subtasks" -> {
+                if (move.length == 2) response = handlePostSub(exchange);
+            }
+
+            default -> {
+                handleBadRequest(exchange, response);
+            }
+        }
+        try (OutputStream os = exchange.getResponseBody()) {
+            os.write(response.getBytes());
+        }
+    }
+
+    protected void processDelete(HttpExchange exchange, String path) throws IOException {
+        String[] move = path.split("/");
+        String response = "Not Found";
+
+        switch (move[1]) {
+            case "task" -> {
+                if (move.length == 2) response = handleDelTaskById(exchange);
+            }
+
+            case "epics" -> {
+                if (move.length == 2) response = handleDelEpicById(exchange);
+            }
+
+            case "subtasks" -> {
+                if (move.length == 2) response = handleDelSubById(exchange);
+            }
+
+            default -> {
+                handleBadRequest(exchange, response);
+            }
+        }
+        try (OutputStream os = exchange.getResponseBody()) {
+            os.write(response.getBytes());
+        }
+    }
+
     private String handleGetTasks(HttpExchange exchange) throws IOException {
-        return handleGetList(exchange, taskManager.getTaskList());
+        String response;
+        if (taskManager.getTaskList() != null) {
+            response = gson.toJson(taskManager.getTaskList());
+            exchange.sendResponseHeaders(200, response.getBytes().length);
+        } else {
+            response = "Not Found";
+            exchange.sendResponseHeaders(404, response.getBytes().length);
+        }
+        return response;
     }
 
     private String handleGetEpics(HttpExchange exchange) throws IOException {
-        return handleGetList(exchange, taskManager.getEpicList());
+        String response;
+        if (taskManager.getTaskList() != null) {
+            response = gson.toJson(taskManager.getEpicList());
+            exchange.sendResponseHeaders(200, response.getBytes().length);
+        } else {
+            response = "Not Found";
+            exchange.sendResponseHeaders(404, response.getBytes().length);
+        }
+        return response;
     }
+
 
     private String handleGetSubtasks(HttpExchange exchange) throws IOException {
-        return handleGetList(exchange, taskManager.getSubtaskList());
-    }
-
-    private String handleGetList(HttpExchange exchange, Object list) throws IOException {
-        if (list != null) {
-            String response = gson.toJson(list);
+        String response;
+        if (taskManager.getTaskList() != null) {
+            response = gson.toJson(taskManager.getSubtaskList());
             exchange.sendResponseHeaders(200, response.getBytes().length);
-            return response;
         } else {
-            return handleNotFound(exchange, "Not Found");
+            response = "Not Found";
+            exchange.sendResponseHeaders(404, response.getBytes().length);
         }
+        return response;
     }
 
     private String handleGetTaskById(HttpExchange exchange) throws IOException {
+        String response;
         String id = exchange.getRequestURI().getPath().split("/")[2];
-        int postId;
-        try {
-            postId = Integer.parseInt(id);
-        } catch (NumberFormatException e) {
-            return handleBadRequest(exchange, "Invalid ID format");
-        }
+        int postId = Integer.parseInt(id);
 
         if (taskManager.getTaskMaster().containsKey(postId)) {
-            String response = gson.toJson(taskManager.serchTask(postId));
+            response = gson.toJson(taskManager.serchTask(postId));
             exchange.sendResponseHeaders(200, response.getBytes().length);
-            return response;
         } else {
-            return handleNotFound(exchange, "Not Found");
+            response = "Not Found";
+            exchange.sendResponseHeaders(404, response.getBytes().length);
         }
+        return response;
     }
 
     private String handleGetEpicsSubsById(HttpExchange exchange) throws IOException {
+        String response;
         String id = exchange.getRequestURI().getPath().split("/")[2];
-        int postId;
-        try {
-            postId = Integer.parseInt(id);
-        } catch (NumberFormatException e) {
-            return handleBadRequest(exchange, "Invalid ID format");
-        }
+        int postId = Integer.parseInt(id);
 
         if (taskManager.getTaskMaster().containsKey(postId)) {
             Epic epic = (Epic) taskManager.serchTask(postId);
-            String response = gson.toJson(epic.getSubMap().values());
+            response = gson.toJson(epic.getSubMap().values());
             exchange.sendResponseHeaders(200, response.getBytes().length);
-            return response;
         } else {
-            return handleNotFound(exchange, "Not Found");
+            response = "Not Found";
+            exchange.sendResponseHeaders(404, response.getBytes().length);
         }
+        return response;
+    }
+
+    private String handleGetPrioritized(HttpExchange exchange) throws IOException {
+        String response;
+        String id = exchange.getRequestURI().getPath().split("/")[2];
+        int postId = Integer.parseInt(id);
+
+        if (taskManager.getTaskMaster().containsKey(postId)) {
+            response = gson.toJson(taskManager.getPrioritizedTasks());
+            exchange.sendResponseHeaders(200, response.getBytes().length);
+        } else {
+            response = "Not Found";
+            exchange.sendResponseHeaders(404, response.getBytes().length);
+        }
+        return response;
+    }
+
+    private String handleGetHistory(HttpExchange exchange) throws IOException {
+        String response;
+        String id = exchange.getRequestURI().getPath().split("/")[2];
+        int postId = Integer.parseInt(id);
+
+        if (taskManager.getTaskMaster().containsKey(postId)) {
+            response = gson.toJson(taskManager.getHistory());
+            exchange.sendResponseHeaders(200, response.getBytes().length);
+        } else {
+            response = "Not Found";
+            exchange.sendResponseHeaders(404, response.getBytes().length);
+        }
+        return response;
+    }
+
+    private String handlePostTask(HttpExchange exchange) throws IOException {
+        String response;
+        InputStream inputStream = exchange.getRequestBody();
+        String body = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+
+        Task task = gson.fromJson(body, Task.class);
+        try {
+            taskManager.pushTask(task);
+        } catch (IllegalArgumentException e) {
+            response = e.getMessage();
+            exchange.sendResponseHeaders(406, response.getBytes().length);
+            return response;
+        }
+        response = task.toString();
+        exchange.sendResponseHeaders(406, response.getBytes().length);
+
+        return response;
+    }
+
+    private String handlePostEpic(HttpExchange exchange) throws IOException {
+        String response;
+        InputStream inputStream = exchange.getRequestBody();
+        String body = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+
+        Epic epic = gson.fromJson(body, Epic.class);
+        try {
+            taskManager.pushEpic(epic);
+        } catch (IllegalArgumentException e) {
+            response = e.getMessage();
+            exchange.sendResponseHeaders(406, response.getBytes().length);
+            return response;
+        }
+        response = epic.toString();
+        exchange.sendResponseHeaders(200, response.getBytes().length);
+        return response;
+    }
+
+    private String handlePostSub(HttpExchange exchange) throws IOException {
+        String response;
+        InputStream inputStream = exchange.getRequestBody();
+        String body = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+
+        Subtask sub = gson.fromJson(body, Subtask.class);
+        try {
+            taskManager.pushSub(sub);
+        } catch (IllegalArgumentException e) {
+            response = e.getMessage();
+            exchange.sendResponseHeaders(406, response.getBytes().length);
+            return response;
+        }
+        response = sub.toString();
+        exchange.sendResponseHeaders(406, response.getBytes().length);
+
+        return response;
     }
 
     private String handleDelTaskById(HttpExchange exchange) throws IOException {
+        String response;
         String id = exchange.getRequestURI().getPath().split("/")[2];
-        int postId;
-        try {
-            postId = Integer.parseInt(id);
-        } catch (NumberFormatException e) {
-            return handleBadRequest(exchange, "Invalid ID format");
-        }
+        int postId = Integer.parseInt(id);
 
         if (taskManager.getTaskMaster().containsKey(postId)) {
-            String response = gson.toJson(taskManager.serchTask(postId));
+            response = gson.toJson(taskManager.serchTask(postId));
             taskManager.deleteTask(postId);
             exchange.sendResponseHeaders(200, response.getBytes().length);
-            return response;
         } else {
-            return handleNotFound(exchange, "Not Found");
+            response = "Not Found";
+            exchange.sendResponseHeaders(404, response.getBytes().length);
         }
+        return response;
     }
 
     private String handleDelEpicById(HttpExchange exchange) throws IOException {
+        String response;
         String id = exchange.getRequestURI().getPath().split("/")[2];
-        int postId;
-        try {
-            postId = Integer.parseInt(id);
-        } catch (NumberFormatException e) {
-            return handleBadRequest(exchange, "Invalid ID format");
-        }
+        int postId = Integer.parseInt(id);
 
         if (taskManager.getTaskMaster().containsKey(postId)) {
-            String response = gson.toJson(taskManager.serchTask(postId));
+            response = gson.toJson(taskManager.serchTask(postId));
             taskManager.deleteEpic(postId);
             exchange.sendResponseHeaders(200, response.getBytes().length);
-            return response;
         } else {
-            return handleNotFound(exchange, "Not Found");
+            response = "Not Found";
+            exchange.sendResponseHeaders(404, response.getBytes().length);
         }
+        return response;
     }
 
     private String handleDelSubById(HttpExchange exchange) throws IOException {
+        String response;
         String id = exchange.getRequestURI().getPath().split("/")[2];
-        int postId;
-        try {
-            postId = Integer.parseInt(id);
-        } catch (NumberFormatException e) {
-            return handleBadRequest(exchange, "Invalid ID format");
-        }
+        int postId = Integer.parseInt(id);
 
         if (taskManager.getTaskMaster().containsKey(postId)) {
-            String response = gson.toJson(taskManager.serchTask(postId));
+            response = gson.toJson(taskManager.serchTask(postId));
             taskManager.deleteSubtask(postId);
             exchange.sendResponseHeaders(200, response.getBytes().length);
-            return response;
         } else {
-            return handleNotFound(exchange, "Not Found");
+            response = "Not Found";
+            exchange.sendResponseHeaders(404, response.getBytes().length);
         }
-    }
-
-    private String handlePostTask(HttpExchange exchange, String body) throws IOException {
-        // Реализуйте логику создания задачи здесь
-        return "Task created";
-    }
-
-    private String handlePostEpic(HttpExchange exchange, String body) throws IOException {
-        // Реализуйте логику создания эпика здесь
-        return "Epic created";
-    }
-
-    private String handlePostSubtask(HttpExchange exchange, String body) throws IOException {
-        // Реализуйте логику создания подзадачи здесь
-        return "Subtask created";
-    }
-
-    private Endpoint getEndpoint(String requestPath, String requestMethod) {
-        String[] pathParts = requestPath.split("/");
-
-        switch (requestMethod) {
-            case "GET":
-                if (taskManager.getTaskMaster() == null) return Endpoint.ERROR_404;
-                if (pathParts[1].equals("tasks")) {
-                    if (pathParts.length == 2) return Endpoint.GET_TASKS;
-                    if (pathParts.length == 3) return Endpoint.GET_TASKS_ID;
-                }
-                if (pathParts[1].equals("epics")) {
-                    if (pathParts.length == 2) return Endpoint.GET_EPICS;
-                    if (pathParts.length == 3) return Endpoint.GET_EPICS_ID;
-                    if (pathParts.length == 4 && pathParts[3].equals("subtasks")) return Endpoint.GET_EPICS_ID_SUBTUSKS;
-                }
-                if (pathParts[1].equals("subtasks")) {
-                    if (pathParts.length == 2) return Endpoint.GET_SUBTASKS;
-                    if (pathParts.length == 3) return Endpoint.GET_SUBTASKS_ID;
-                }
-                if (pathParts[1].equals("history")) return Endpoint.GET_HYSTORY;
-                if (pathParts[1].equals("prioritized")) return Endpoint.GET_PRIORITIZED;
-                return Endpoint.UNKNOWN;
-            case "POST":
-                if (taskManager.getTaskMaster() == null) return Endpoint.ERROR_404;
-                if (pathParts[1].equals("tasks") && pathParts.length == 2) return Endpoint.POST_TASKS;
-                if (pathParts[1].equals("epics") && pathParts.length == 2) return Endpoint.POST_EPICS;
-                if (pathParts[1].equals("subtasks") && pathParts.length == 2) return Endpoint.POST_SUBTASKS;
-                return Endpoint.UNKNOWN;
-            case "DELETE":
-                if (taskManager.getTaskMaster() == null) return Endpoint.ERROR_404;
-                if (pathParts[1].equals("tasks") && pathParts.length == 3) return Endpoint.DELETE_TASKS_ID;
-                if (pathParts[1].equals("epics") && pathParts.length == 3) return Endpoint.DELETE_EPICS_ID;
-                if (pathParts[1].equals("subtasks") && pathParts.length == 3) return Endpoint.DELETE_SUBTASKS_ID;
-                return Endpoint.UNKNOWN;
-            default:
-                return Endpoint.UNKNOWN;
-        }
+        return response;
     }
 
     private void sendResponse(HttpExchange exchange, String response) throws IOException {
@@ -226,13 +348,18 @@ public class BaseHttpHandler implements HttpHandler {
         }
     }
 
-    private String handleNotFound(HttpExchange exchange, String message) throws IOException {
-        exchange.sendResponseHeaders(404, message.getBytes().length);
-        return message;
+    private void handleNotFound(HttpExchange exchange) throws IOException {
+        String response = "Unknown request";
+        exchange.sendResponseHeaders(404, response.getBytes().length);
+        try (OutputStream os = exchange.getResponseBody()) {
+            os.write(response.getBytes());
+        }
     }
 
-    private String handleBadRequest(HttpExchange exchange, String message) throws IOException {
-        exchange.sendResponseHeaders(400, message.getBytes().length);
-        return message;
+    private void handleBadRequest(HttpExchange exchange, String response) throws IOException {
+        exchange.sendResponseHeaders(400, response.getBytes().length);
+        try (OutputStream os = exchange.getResponseBody()) {
+            os.write(response.getBytes());
+        }
     }
 }
