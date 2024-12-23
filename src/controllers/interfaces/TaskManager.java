@@ -1,6 +1,5 @@
 package controllers.interfaces;
 
-import classes.enums.Class;
 import classes.tasks.Epic;
 import classes.enums.Status;
 import classes.tasks.Subtask;
@@ -13,9 +12,9 @@ public interface TaskManager {
 
     ArrayList<Task> getHistory();
 
-    public HashMap<Integer, Task> getTaskMaster();
+    HashMap<Integer, Task> getTaskMaster();
 
-    public ArrayList<Task> getPrioritizedTasks();
+    ArrayList<Task> getPrioritizedTasks();
 
     ArrayList<Subtask> getSubtaskList();
 
@@ -23,11 +22,11 @@ public interface TaskManager {
 
     void delete(Integer id);
 
-    public void deleteTask(int id);
+    void deleteTask(int id);
 
-    public void deleteEpic(int id);
+    void deleteEpic(int id);
 
-    public void deleteSubtask(int id);
+    void deleteSubtask(int id);
 
     void changeStatusSub(Status status, Subtask sub);
 
