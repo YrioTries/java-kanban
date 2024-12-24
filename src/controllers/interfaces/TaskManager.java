@@ -6,16 +6,27 @@ import classes.tasks.Subtask;
 import classes.tasks.Task;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public interface TaskManager {
 
     ArrayList<Task> getHistory();
+
+    HashMap<Integer, Task> getTaskMaster();
+
+    ArrayList<Task> getPrioritizedTasks();
 
     ArrayList<Subtask> getSubtaskList();
 
     ArrayList<Epic> getEpicList();
 
     void delete(Integer id);
+
+    void deleteTask(int id);
+
+    void deleteEpic(int id);
+
+    void deleteSubtask(int id);
 
     void changeStatusSub(Status status, Subtask sub);
 

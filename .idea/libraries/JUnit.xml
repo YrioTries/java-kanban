@@ -1,5 +1,5 @@
 <component name="libraryTable">
-  <library name="Assertions">
+  <library name="JUnit">
     <CLASSES>
       <root url="file://$PROJECT_DIR$/../m1-t23-junit/lib" />
     </CLASSES>
