@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Maven-3.9.9">
+    <CLASSES>
+      <root url="file://$USER_HOME$/Downloads/apache-maven-3.9.9-bin/apache-maven-3.9.9/lib" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+    <jarDirectory url="file://$USER_HOME$/Downloads/apache-maven-3.9.9-bin/apache-maven-3.9.9/lib" recursive="false" />
+  </library>
+</component>
